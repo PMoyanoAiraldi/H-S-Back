@@ -5,6 +5,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { postgresDataSourceConfig } from './config/data-source';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSourceOptions } from 'typeorm';
+import { User } from './user/users.entity';
+import { Products } from './product/product.entity';
+import { Order } from './order/order.entity';
+import { OrderProduct } from './orderProduct/order-product.entity';
+import { Category } from './categories/category.entity';
 
 @Module({
   imports: [
@@ -20,6 +25,11 @@ import { DataSourceOptions } from 'typeorm';
         return config;
       }
     }),
+    User,
+    Products,
+    Order,
+    OrderProduct,
+    Category
   
   ],
 controllers: [AppController],
