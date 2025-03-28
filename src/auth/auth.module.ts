@@ -1,17 +1,26 @@
 import { Module } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { AuthController } from "./auth.controller";
-import { UsersService } from "../users/users.service";
-import { UsersRepository } from "../users/users.repository";
-import { UsersModule } from "../users/users.module";
-import { SharedModule } from '../../shared/shared/shared.module'
+import { PassportModule } from "@nestjs/passport";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { User } from "../users/users.entity";
+import { SharedModule } from "src/shared/shared.module";
+import { User } from "src/user/users.entity";
+import { UserModule } from "src/user/users.module";
+import { AuthService } from "./auth.service";
+import { JwtStrategy } from "./jwtStrategy";
+import { AuthController } from "./auth.controller";
 
 
 @Module({
-    imports: [UsersModule, SharedModule, TypeOrmModule.forFeature([User])],
-    providers: [AuthService, UsersService, UsersRepository],
+    imports: [
+        UserModule, 
+        PassportModule, 
+        SharedModule, 
+        TypeOrmModule.forFeature([User])
+    ],
+    providers: [
+        AuthService,
+        JwtStrategy, // Estrategia para autenticación JWT
+    ],
     controllers: [AuthController],
+    exports: [AuthModule]
 })
-export class AuthModule{}
+export class AuthModule {}

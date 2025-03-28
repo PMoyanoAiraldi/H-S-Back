@@ -8,6 +8,8 @@ import { Category } from "src/categories/category.entity";
 import { UserService } from "./users.service";
 import { UsersController } from "./users.controller";
 
+
+
 @Module({
     imports: [TypeOrmModule.forFeature([User, Products, OrderProduct, Order, Category])],
     providers: [ UserService],
