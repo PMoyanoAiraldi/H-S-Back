@@ -8,6 +8,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
         .setTitle('H&S')
         .setDescription('Esta aplicación permite a los usuarios visualizar los productos ofrecidos por H&S Hidraulica, sólo los clientes registrados podrán visualizar su lista de precios ')
+        .addBearerAuth()
         .setVersion('1.0')
         .build()
 

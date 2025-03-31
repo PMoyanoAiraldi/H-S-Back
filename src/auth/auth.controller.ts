@@ -16,16 +16,6 @@ export class AuthController {
     @ApiOperation({ summary: 'Loguear un usuario' })
     @ApiResponse({ status: 201, description: 'Usuario logueado exitosamente', type: LoginUserDto })
     @ApiResponse({ status: 500, description: 'Error inesperado al loguear el usuario' })
-    @ApiBody({
-            description: 'Datos para loguear el cliente',
-            schema: {
-                type: 'object',
-                properties: {
-                    name: { type: 'string' },
-                    password: { type: 'string' },
-                },
-            },
-        })
     async signIn(@Body() credentials: LoginUserDto) {
         return this.authService.login(credentials)
     }

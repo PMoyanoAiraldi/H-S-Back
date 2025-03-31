@@ -17,7 +17,7 @@ export class AuthService {
     ) { }
     async login(loginUser: LoginUserDto): Promise<{ user: Partial<User>, token: string }> {
         const user = await this.usersRepository.findOne({ 
-            where: {name: loginUser.name.toLowerCase()},
+            where: {name: loginUser.name},
         });
         console.log('Usuario encontrado:', user);
 
