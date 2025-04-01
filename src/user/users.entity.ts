@@ -19,21 +19,21 @@ export class User {
      * Nombre del usuario
      * @example 'Paula'
      */
-    @Column({ length: 80, nullable: false })
-    name: string;
+    @Column({ length: 80, nullable: false, unique: true })
+    username: string;
 
 
     /**
      * La contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial (!@#$%^&*)
      * @example 'Ejemplo*1'
      */
-    @Column({ nullable: false })
+    @Column({ nullable: false, select: false })
     password: string;
 
 
 
     /**
-     * Rol del usuario, si es 'usuario' o 'administrador'
+     *  Rol del usuario, si es `false` es un usuario estándar, si es `true` es administrador.
      * @example 'false'
      */
     @Column({default: false})
@@ -41,14 +41,22 @@ export class User {
 
 
     /**
-     * Estado del usuario, si está activo o no'
+     * Estado del usuario. `true` significa que el usuario está activo, `false` indica que está inactivo.
      * @example 'true'
      */
     @Column({ default: true }) // Por defecto, el usuario estará activo
     state: boolean;
 
+
     /**
-     * El arreglo con la información de la orden
+     * Indica si el usuario debe cambiar su contraseña al iniciar sesión
+     * @example true
+     */
+    @Column({ default: true })
+    mustChangePassword: boolean;
+
+    /**
+     * Lista de órdenes asociadas al usuario.
      * 
      */
     @OneToMany(() => Order, (order) => order.user)

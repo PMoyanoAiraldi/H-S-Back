@@ -33,4 +33,9 @@ export class UsersController {
         };
     }
 
+    @Post('upload')
+    async uploadClients(@Body() clients: any[]) {
+        await this.usersService.processClients(clients);
+        return { message: 'Clientes procesados correctamente' };
+    }
 }

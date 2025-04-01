@@ -17,7 +17,7 @@ export class AuthService {
     ) { }
     async login(loginUser: LoginUserDto): Promise<{ user: Partial<User>, token: string }> {
         const user = await this.usersRepository.findOne({ 
-            where: {name: loginUser.name},
+            where: {username: loginUser.username},
         });
         console.log('Usuario encontrado:', user);
 
@@ -39,6 +39,11 @@ export class AuthService {
             throw new HttpException('Nombre o contraseña incorrecto', HttpStatus.UNAUTHORIZED);
         }
 
+        // Si es su primer acceso, obligar a cambiar la contraseña
+        if (user.mustChangePassword) {
+            throw new HttpException('Debes cambiar tu contraseña antes de continuar.', HttpStatus.FORBIDDEN);
+        }
+
         const token = await this.createToken(user);
         
         // Elimina campos sensibles como contrasena
@@ -54,7 +59,7 @@ export class AuthService {
     private async createToken(user: User) {
         const payload = {
             id: user.id,
-            name: user.name,
+            username: user.username,
             rol: user.admin
         };
         return this.jwtService.signAsync(payload)

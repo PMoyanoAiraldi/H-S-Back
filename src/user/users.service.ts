@@ -17,7 +17,7 @@ export class UserService {
 
     async createUser(createUser: CreateUserDto): Promise<User>{
         // Verificar si el correo ya existe
-        const userExisting = await this.usersRepository.findOne({ where: { name: createUser.name } });
+        const userExisting = await this.usersRepository.findOne({ where: { username: createUser.username } });
         if (userExisting) {
             throw new HttpException('El cliente ya está registrado', 400);
         }
@@ -46,6 +46,37 @@ export class UserService {
             return this.usersRepository.findOne({ where: {id}})
         }
         
-    }
+        async processClients(clients: Partial<User>[]): Promise<User[]> {
+            const createdUsers: User[] = [];
+            for (const client of clients) {
+                const existingUser = await this.usersRepository.findOne({ 
+                where: { username: client.username } 
+                });
+        
+                if (!existingUser) {
+                const hashedPassword = await bcrypt.hash('ClaveTemporal123!', 10);
+                
+                const newUser = this.usersRepository.create({
+                    username: this.generateUsername(client),
+                    password: hashedPassword,
+                    mustChangePassword: true, // Obligar cambio de clave en primer login
+                });
+        
+                await this.usersRepository.save(newUser);
+                createdUsers.push(newUser);
+            }
+                return createdUsers
+            }
+        }
+        
+        private generateUsername(client: any): string {
+            return client.razonSocial 
+                ? client.razonSocial.replace(/\s+/g, '_').toLowerCase()
+                : `${client.nombre}_${client.apellido}`.toLowerCase();
+        }
+
+
+        
+        }
 
     
