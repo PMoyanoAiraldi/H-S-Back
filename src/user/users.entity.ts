@@ -27,7 +27,7 @@ export class User {
      * La contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial (!@#$%^&*)
      * @example 'Ejemplo*1'
      */
-    @Column({ nullable: false, select: false })
+    @Column({ nullable: false})
     password: string;
 
 

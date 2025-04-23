@@ -17,6 +17,8 @@ export class UserService {
 
     async createUser(createUser: CreateUserDto): Promise<User>{
         // Verificar si el correo ya existe
+        try{
+            console.log('Datos recibidos:', createUser);
         const userExisting = await this.usersRepository.findOne({ where: { username: createUser.username } });
         if (userExisting) {
             throw new HttpException('El cliente ya está registrado', 400);
@@ -41,6 +43,7 @@ export class UserService {
             }
             throw new HttpException('Error al crear el cliente', 500);
         }
+    }
 
         async getUserForId(id: string): Promise<User | undefined>{
             return this.usersRepository.findOne({ where: {id}})

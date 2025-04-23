@@ -1,4 +1,4 @@
-import { ForbiddenException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/user/users.entity";
@@ -30,30 +30,30 @@ export class AuthService {
             throw new ForbiddenException('Tu cuenta está suspendida. Contacta al administrador.');
         }
 
-        const isPasswordMatchin = user && await bcrypt.compare(loginUser.password, user.password);
+        const isPasswordMatching = user && await bcrypt.compare(loginUser.password, user.password);
 
         console.log('Contraseña recibida en el login:', loginUser.password);
-        console.log('Contraseña coincide:', isPasswordMatchin);
+        console.log('Contraseña coincide:', isPasswordMatching);
 
-        if (!isPasswordMatchin) {
+        if (!isPasswordMatching) {
             throw new HttpException('Nombre o contraseña incorrecto', HttpStatus.UNAUTHORIZED);
         }
 
         // Si es su primer acceso, obligar a cambiar la contraseña
         if (user.mustChangePassword) {
-            throw new HttpException('Debes cambiar tu contraseña antes de continuar.', HttpStatus.FORBIDDEN);
+            const token = await this.createToken(user);
+            // Elimina campos sensibles como password
+            const { password, ...userWithoutPassword } = user;
+
+            return {// Devuelve tanto el token como la información del usuario
+                user: {
+                    ...userWithoutPassword,
+                    mustChangePassword: true,
+                },
+                token,
+            };
         }
 
-        const token = await this.createToken(user);
-        
-        // Elimina campos sensibles como contrasena
-        const { password, ...userswithoutpassword } = user;
-
-        // Devuelve tanto el token como la información del usuario
-        return {
-            user: userswithoutpassword,
-            token
-        };
     }
 
     private async createToken(user: User) {
@@ -63,6 +63,21 @@ export class AuthService {
             rol: user.admin
         };
         return this.jwtService.signAsync(payload)
+    }
+
+    async changePassword(userId: string, oldPassword: string, newPassword: string): Promise<{ message: string }> {
+        const user = await this.usersRepository.findOne({ where: { id: userId } });
+    
+        if (!user || !(await bcrypt.compare(oldPassword, user.password))) {
+            throw new BadRequestException('Contraseña actual incorrecta.');
+        }
+    
+        user.password = await bcrypt.hash(newPassword, 10);
+        user.mustChangePassword = false;
+    
+        await this.usersRepository.save(user);
+    
+        return { message: 'Contraseña cambiada correctamente' };
     }
     
     }
