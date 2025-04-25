@@ -7,12 +7,15 @@ import { Products } from "src/product/product.entity";
 import { Order } from "src/order/order.entity";
 import { OrderProduct } from "src/orderProduct/order-product.entity";
 import { CategoryController } from "./category.controller";
+import { CloudinaryService } from "src/file-upload/cloudinary.service";
+import { FileUploadService } from "src/file-upload/file-upload.service";
+import { ProductService } from "src/product/product.service";
 
 
 
 @Module({
     imports: [TypeOrmModule.forFeature([Category, User, Products, Order, OrderProduct])],
-    providers: [CategoryService],
+    providers: [CategoryService, CloudinaryService, FileUploadService, ProductService],
     controllers: [CategoryController],
     exports: [CategoryService, TypeOrmModule]
 })

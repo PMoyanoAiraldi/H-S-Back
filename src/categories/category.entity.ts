@@ -13,11 +13,17 @@ export class Category {
 
     /**
      * El nombre de la categoría del producto
-     * @example 'monitor'
+     * @example 'tractor - ver si lo tomamos por herramientas'
      */
     @Column({ length: 50, nullable: false })
     name: string;
 
     @OneToMany(() => Products, (product) => product.category)
     products: Products[];
+
+    @Column({ nullable: true })
+    image?: string;
+
+    @Column({ default: true }) // Por defecto, la categoria estará activa
+    state: boolean
 }

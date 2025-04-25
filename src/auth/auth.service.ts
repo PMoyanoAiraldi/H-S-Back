@@ -39,12 +39,12 @@ export class AuthService {
             throw new HttpException('Nombre o contraseña incorrecto', HttpStatus.UNAUTHORIZED);
         }
 
+        const token = await this.createToken(user);
+        const { password, ...userWithoutPassword } = user;// Elimina campos sensibles como password
+
         // Si es su primer acceso, obligar a cambiar la contraseña
         if (user.mustChangePassword) {
-            const token = await this.createToken(user);
-            // Elimina campos sensibles como password
-            const { password, ...userWithoutPassword } = user;
-
+        
             return {// Devuelve tanto el token como la información del usuario
                 user: {
                     ...userWithoutPassword,
@@ -53,6 +53,10 @@ export class AuthService {
                 token,
             };
         }
+        return {
+            user: userWithoutPassword,
+            token,
+        };
 
     }
 
@@ -79,5 +83,6 @@ export class AuthService {
     
         return { message: 'Contraseña cambiada correctamente' };
     }
+    
     
     }
