@@ -1,6 +1,10 @@
 import { Order } from "src/order/order.entity";
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 
+export enum rolEnum {
+    ADMIN = 'admin',
+    CLIENTE = 'cliente',
+}
 
 @Entity({
     name: 'users'
@@ -32,12 +36,12 @@ export class User {
 
 
 
-    /**
-     *  Rol del usuario, si es `false` es un usuario estándar, si es `true` es administrador.
-     * @example 'false'
-     */
-    @Column({default: false})
-    admin: boolean
+    @Column({
+        type: 'enum',
+        enum: rolEnum,
+        default: rolEnum.CLIENTE,
+    })
+    rol: rolEnum;
 
 
     /**

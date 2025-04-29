@@ -46,7 +46,7 @@ export class ProductService {
             if (file) {
                 try {
                     // Espera la carga de la imagen
-                    imageUrl = await this.cloudinaryService.uploadFile(file.buffer, 'clase', file.originalname);
+                    imageUrl = await this.cloudinaryService.uploadFile(file.buffer, 'product', file.originalname);
                     console.log('Archivo subido a Cloudinary:', imageUrl);
                 } catch (error) {
                     console.error('Error al subir la imagen a Cloudinary:', error);
@@ -58,7 +58,7 @@ export class ProductService {
             const newProduct = this.productsRepository.create({
                 ...createProductDto,
                 category,
-                // imagen: imageUrl,
+                imgUrl: imageUrl,
             });
     
             // Guardar la clase y esperar su confirmación

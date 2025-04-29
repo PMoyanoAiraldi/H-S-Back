@@ -19,10 +19,10 @@ export class ProductsController {
 
     @Post()
     @ApiOperation({ summary: 'Crear un nuevo producto' })
-    @ApiResponse({ status: 201, description: 'Clase creada exitosamente', type: ResponseProductDto })
+    @ApiResponse({ status: 201, description: 'Producto creado exitosamente', type: ResponseProductDto })
     @ApiResponse({ status: 400, description: 'El producto ya existe.' })
     @UseGuards(AuthGuard, RolesGuard)
-    @Roles('admin', 'profesor')
+    @Roles('admin')
     @ApiSecurity('bearer')
     @ApiConsumes('multipart/form-data')
     @ApiBody({
@@ -30,17 +30,17 @@ export class ProductsController {
         schema: {
             type: 'object',
             properties: {
-                imgUrl: { type: 'string', format: 'binary' },
                 name: { type: 'string' },
                 description: { type: 'string' },
                 price: { type: 'number' },
                 stock: { type: 'number' },
                 categoryId: { type: 'string' },
+                imgUrl: { type: 'string', format: 'binary' },
 
             },
         },
     })
-    //@UseInterceptors(FileInterceptor('image', { limits: { fileSize: 10 * 1024 * 1024 } }), TransformInterceptor)
+    @UseInterceptors(FileInterceptor('imgUrl', { limits: { fileSize: 10 * 1024 * 1024 } }))
     async create(@Body() createProductDto: CreateProductDto, @UploadedFile() file?: Express.Multer.File): Promise<ResponseProductDto> {
 
         // Llamar al servicio para crear el product

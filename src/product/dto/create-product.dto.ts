@@ -28,7 +28,7 @@ export class CreateProductDto {
         format: 'binary', 
         description: 'Imagen del producto',
     })
-    imgUrl?: any;
+    imgUrl?: string;
 
     
     @ApiProperty({ 
