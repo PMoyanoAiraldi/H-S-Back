@@ -16,7 +16,7 @@ export class FileUploadService {
 
     // async uploadFile(
     //     file: Express.Multer.File, 
-    //     entityType: 'product' |   'category',
+    //     entityType: 'product' | 'category',
     //     entityId?: string
     // ): Promise<{ imgUrl: string }>{
     
@@ -51,12 +51,12 @@ export class FileUploadService {
     //             throw new Error('Producto no encontrado');
     //         }
             
-    //         if (!product) {
+    //         if (!product.categoryId) {
     //             throw new Error('La categoría no existe');
     //         }
             
     //     // Actualizamos solo la propiedad imagen, manteniendo las demás propiedades intactas
-    //     await this.clasesService.update(entityId, {
+    //     await this.productService.update(entityId, {
     //         ...clase,   // Propiedades existentes
     //         imagen: url, // Actualizamos solo la imagen
     //         categoriaId: clase.categoria ? clase.categoria.id : null,
