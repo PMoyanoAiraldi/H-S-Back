@@ -3,16 +3,22 @@ import { IsNotEmpty,  IsString, IsUUID } from "class-validator";
 
 export class ResponseCategoryDto {
     
-    @ApiProperty({ description: "El nombre de la categoria", required: true})
-    @IsString()
-    @IsNotEmpty()
-    name: string;
+    @ApiProperty({
+        type: String,
+        description: "El identificador único de la categoría",
+        required: true,
+    })
+    id: string;
 
     @ApiProperty({
-        type: 'string',
-        format: 'binary', 
-        description: 'Imagen de la categoria del producto',
+        type: String,
+        description: "El nombre de la categoría",
+        required: true,
     })
-    image?: string;
+    name: string;
 
+    constructor(id: string, name: string) {
+        this.id = id;
+        this.name = name;
+    }
 }

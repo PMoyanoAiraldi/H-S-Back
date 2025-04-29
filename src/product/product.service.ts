@@ -7,6 +7,7 @@ import { ResponseProductDto } from "./dto/response-product.dto";
 import { CategoryService } from "src/categories/category.service";
 import { CloudinaryService } from "src/file-upload/cloudinary.service";
 
+
 @Injectable()
 export class ProductService {
     constructor(
@@ -74,6 +75,28 @@ export class ProductService {
             }
             throw error;
         }
+    }
+
+    async get(page: number, limit: number) {
+        return await this.productsRepository.find({
+            take: limit,
+            skip: (page - 1) * limit,
+        });
+    }
+
+    async findOne(productId: string): Promise<ResponseProductDto> {
+        const product = await this.productsRepository.findOne({
+            where: { id: productId },
+            relations: ['category'],
+        });
+
+        console.log('Resultado de la consulta:', product);
+
+        if (!product) {
+            throw new NotFoundException(`Producto con ID ${productId} no encontrado`);
+        }
+
+        return product
     }
     
 }

@@ -1,5 +1,5 @@
-import { Body, Controller, Post, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
-import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiSecurity, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Get, NotFoundException, Param, ParseUUIDPipe, Post, Query, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiSecurity, ApiTags } from "@nestjs/swagger";
 import { ProductService } from "./product.service";
 
 import { RolesGuard } from "src/guard/roles.guard";
@@ -8,6 +8,7 @@ import { Roles } from "src/decorators/roles.decorator";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { AuthGuard } from "src/guard/auth.guard";
+import { Products } from "./product.entity";
 
 @ApiTags("Products")
 @Controller("products")
@@ -49,6 +50,31 @@ export class ProductsController {
         return newProduct;
     }
 
+    @Get()
+    @ApiOperation({ summary: 'Obtener todos los productos' })
+    @ApiResponse({ status: 200, description: 'Productos obtenidos', type: [Products] })
+    @ApiQuery({ name: 'page', required: false, description: 'Número de página', example: 1 })
+    @ApiQuery({ name: 'limit', required: false, description: 'Cantidad de resultados por página', example: 5 })
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('admin')
+    @ApiSecurity('bearer')
+    async getClases(
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10,
+    ) {
+        return this.productsService.get(page, limit);
+    }
 
+    @Get(':id')
+    @ApiOperation({ summary: 'Obtener producto por ID' })
+    @ApiResponse({ status: 200, description: 'Producto obtenida', type: Products })
+    @ApiResponse({ status: 404, description: 'Producto no encontrada' })
+    async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+        const product = await this.productsService.findOne(id);
+        if (!product) {
+            throw new NotFoundException("Producto no encontrado");
+        }
+        return product;
+    }
 
 }
