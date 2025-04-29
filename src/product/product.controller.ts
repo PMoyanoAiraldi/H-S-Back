@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotFoundException, Param, ParseUUIDPipe, Post, Query, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, NotFoundException, Param, ParseUUIDPipe, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiSecurity, ApiTags } from "@nestjs/swagger";
 import { ProductService } from "./product.service";
 
@@ -9,6 +9,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { AuthGuard } from "src/guard/auth.guard";
 import { Products } from "./product.entity";
+import { UpdateStateDto } from "./dto/update-state.dto";
 
 @ApiTags("Products")
 @Controller("products")
@@ -75,6 +76,22 @@ export class ProductsController {
             throw new NotFoundException("Producto no encontrado");
         }
         return product;
+    }
+
+    @Patch(':id')
+    @ApiOperation({ summary: 'Modificar el estado de un producto' })
+    @ApiResponse({ status: 201, description: 'Estado del producto modificado exitosamente', type: [Products] })
+    @ApiResponse({ status: 400, description: 'Datos inválidos' })
+    @ApiResponse({ status: 500, description: 'Error inesperado al modificar el estado del producto' })
+    @ApiBody({ description: 'Cuerpo para modificar el estado de un producto', type: UpdateStateDto })
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('admin')
+    @ApiSecurity('bearer')
+    async updateStateProduct(
+        @Param('id', ParseUUIDPipe) id: string,
+        @Body() updateStateDto: UpdateStateDto
+    ): Promise<Products> {
+        return this.productsService.updateState(id, updateStateDto.state);
     }
 
 }

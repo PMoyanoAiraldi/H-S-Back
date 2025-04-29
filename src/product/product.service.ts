@@ -99,4 +99,19 @@ export class ProductService {
         return product
     }
     
+
+    //Funcion para cambiar de estado activo o no de un producto
+    async updateState(id: string, state: boolean): Promise<Products> {
+        const product = await this.productsRepository.findOne({ where: { id } });
+
+        if (!product) {
+            throw new NotFoundException('Producto no encontrado');
+        }
+
+        product.state = state;
+        await this.productsRepository.save(product);
+
+        return this.productsRepository.findOne({ where: { id } });
+    }
+
 }
