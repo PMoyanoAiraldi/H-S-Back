@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 import { Category } from '../categories/category.entity';
 import { OrderProduct } from 'src/orderProduct/order-product.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Products {
@@ -48,7 +49,22 @@ export class Products {
     @Column({ default: 'default-image-url.jpg' })
     imgUrl: string;
 
-    
+    /**
+    * El estado del producto
+    * @example 'true'
+    */
+    @Column({ default: true }) // Por defecto, el producto estará activo
+    state: boolean;
+
+    @ApiProperty({
+        type: String,
+        description: "Identificador único de la categoria",
+        required: true,
+    })
+    @Column({ type: 'uuid', name: "categoryId", nullable: false })
+    categoryId: string;
+
+
     @ManyToOne(() => Category, (category) => category.products)
     category: Category;
 
