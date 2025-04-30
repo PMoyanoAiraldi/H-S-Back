@@ -165,7 +165,7 @@ export class ProductService {
 
         // Asignar las propiedades de updateProductDto al producto (sin necesidad de comprobar cada campo manualmente)
         Object.assign(product, updateProductDto);
-
+        console.log("propiedades de updateProductDto",Object.assign(product, updateProductDto));
 
         if (updateProductDto.categoryId) {
             const category = await this.categoryService.findOne(
@@ -190,7 +190,7 @@ export class ProductService {
         } catch (error) {
             if (error instanceof QueryFailedError && error.driverError?.code === '23505') {
                 throw new HttpException(
-                    'Ya existe una clase con ese nombre.',
+                    'Ya existe un producto con ese nombre.',
                     HttpStatus.BAD_REQUEST,
                 );
             }
