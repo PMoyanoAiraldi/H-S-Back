@@ -13,16 +13,6 @@ export class ResponseProductDto {
     @IsNotEmpty()
     description: string;
 
-    @ApiProperty({ description: 'El precio del producto', example: 250.50,})
-    @IsNumber({ maxDecimalPlaces: 2 }, { message: 'El precio debe ser un número con hasta dos decimales.' })
-    @IsPositive({ message: 'El precio debe ser un número positivo.' })
-    price: number;
-
-    @ApiProperty({ description: 'La cantidad de stock del producto', example: 300,})
-    @IsNumber()
-    @IsPositive({ message: 'El stock debe ser un número positivo.' })
-    stock: number;
-
     @ApiProperty({
         type: 'string',
         format: 'binary', 

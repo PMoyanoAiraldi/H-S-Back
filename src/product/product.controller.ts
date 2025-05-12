@@ -52,19 +52,31 @@ export class ProductsController {
         return newProduct;
     }
 
-    @Get()
+    @Get('/clients')
     @ApiOperation({ summary: 'Obtener todos los productos' })
     @ApiResponse({ status: 200, description: 'Productos obtenidos', type: [Products] })
     @ApiQuery({ name: 'page', required: false, description: 'Número de página', example: 1 })
     @ApiQuery({ name: 'limit', required: false, description: 'Cantidad de resultados por página', example: 5 })
     @UseGuards(AuthGuard, RolesGuard)
-    @Roles('admin')
+    @Roles('admin', 'cliente')
     @ApiSecurity('bearer')
-    async getClases(
+    async getProductsClents(
         @Query('page') page: number = 1,
         @Query('limit') limit: number = 10,
     ) {
-        return this.productsService.get(page, limit);
+        return this.productsService.getProductsClients(page, limit);
+    }
+
+    @Get()
+    @ApiOperation({ summary: 'Obtener todos los productos' })
+    @ApiResponse({ status: 200, description: 'Productos obtenidos', type: [ResponseProductDto] })
+    @ApiQuery({ name: 'page', required: false, description: 'Número de página', example: 1 })
+    @ApiQuery({ name: 'limit', required: false, description: 'Cantidad de resultados por página', example: 5 })
+    async getProducts(
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 10,
+    ) {
+        return this.productsService.getProducts(page, limit);
     }
 
     @Get(':id')

@@ -79,12 +79,28 @@ export class ProductService {
         }
     }
 
-    async get(page: number, limit: number) {
+    async getProductsClients(page: number, limit: number): Promise<Products[]> {
         return await this.productsRepository.find({
             take: limit,
             skip: (page - 1) * limit,
         });
     }
+
+
+    async getProducts(page: number, limit: number): Promise<ResponseProductDto[]> {
+    const products = await this.productsRepository.find({
+        take: limit,
+        skip: (page - 1) * limit,
+    });
+
+    return products.map(product => ({
+        name: product.name,
+        description: product.description,
+        imgUrl: product.imgUrl,
+        categoryId: product.categoryId,
+    }));
+}
+
 
     async findOne(productId: string): Promise<ResponseProductDto> {
         const product = await this.productsRepository.findOne({
