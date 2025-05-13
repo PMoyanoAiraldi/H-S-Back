@@ -11,6 +11,7 @@ import { OrderModule } from './order/order.module';
 import { OrderProductModule } from './orderProduct/orderProduct.module';
 import { CategoryModule } from './categories/category.module';
 import { AuthModule } from './auth/auth.module';
+import { SeedModule } from './seeds/seeds-module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { AuthModule } from './auth/auth.module';
     OrderModule,
     OrderProductModule,
     CategoryModule,
-    AuthModule
+    AuthModule,
+    SeedModule
   
   ],
 controllers: [AppController],

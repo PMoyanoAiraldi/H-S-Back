@@ -35,7 +35,7 @@ export class CategoryService {
         if(file){
         try {
             // Subir la imagen a Cloudinary y obtener la URL
-            imageUrl = await this.cloudinaryService.uploadFile(file.buffer, 'categoria', file.originalname);
+            imageUrl = await this.cloudinaryService.uploadFile(file.buffer, 'category', file.originalname);
             console.log('Archivo subido a URL:', imageUrl);
         } catch (error) {
             console.error('Error al subir la imagen a Cloudinary:', error);

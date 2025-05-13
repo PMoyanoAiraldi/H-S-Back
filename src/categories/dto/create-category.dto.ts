@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty,  IsString, IsUUID } from "class-validator";
+import { IsNotEmpty,  IsString } from "class-validator";
 
 export class CreateCategoryDto {
     
@@ -8,11 +8,5 @@ export class CreateCategoryDto {
     @IsNotEmpty()
     name: string;
 
-    @ApiProperty({
-        type: 'string',
-        format: 'binary', 
-        description: 'Imagen de la categoria del producto',
-    })
-    image?: string;
 
 }
