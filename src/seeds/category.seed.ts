@@ -9,25 +9,27 @@ export const seedCategory = async (dataSource: DataSource) => {
 
     const categories = [
     {
-        name: 'Tractor',
-        image: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1746567196/category/tractorjpg.jpg', 
+        name: 'Bombas',
     },
     {
-        name: 'Cosechadora',
-        image: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1746568022/category/cosechadorajpeg.jpg'
+        name: 'Motores',
     },
     {
-        name: 'Pulverizador',
-        image: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1747176421/category/pulverizadorjpg.jpg'
+        name: 'Válvulas',
     },
     {
-        name: 'Sembradora',
-        image: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1747176345/category/sembradorajpg.jpg'
+        name: 'Mangueras',
     },
+    {
+        name: 'Cilindros'
+    },
+    {
+        name: 'Accesorios'
+    }
 
 ];
 
-  // Insertar usuarios si no existen
+  // Insertar categorias si no existen
     for (const category of categories) {
         const existingCategory = await categoryRepository.findOne({
         where: { name: category.name },

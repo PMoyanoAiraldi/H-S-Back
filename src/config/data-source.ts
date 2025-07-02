@@ -24,6 +24,7 @@ const PostgresDataSource: DataSourceOptions = {
     // ssl: {
     //     rejectUnauthorized: false, 
     // },
+    //dropSchema: true,
     synchronize: true,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     migrations:['./dist/migration/*{.ts,.js}'],
