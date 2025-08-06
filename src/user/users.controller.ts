@@ -2,6 +2,8 @@ import { Body, Controller, Post, UseInterceptors } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { UserService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
+import { User } from "./users.entity";
+import { RecoverPasswordDto } from "./dto/recover-password.dto";
 
 
 @ApiTags("Users")
@@ -34,8 +36,17 @@ export class UsersController {
     }
 
     @Post('upload')
-    async uploadClients(@Body() clients: any[]) {
+    async uploadClients(@Body() clients: User[]) {
         await this.usersService.processClients(clients);
         return { message: 'Clientes procesados correctamente' };
     }
+
+    @Post('recover')
+    async recoverPassword(@Body() recoverData: RecoverPasswordDto) {
+        const user = await this.usersService.recoverPassword(recoverData);
+        return { message: 'Contraseña actualizada con éxito!', user};
+    }
+
+
+
 }

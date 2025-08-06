@@ -1,10 +1,10 @@
-import { ForbiddenException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./users.entity";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from 'bcrypt';
-import { JwtService } from "@nestjs/jwt";
+import { RecoverPasswordDto } from "./dto/recover-password.dto";
 
 @Injectable()
 export class UserService {
@@ -78,6 +78,23 @@ export class UserService {
                 : `${client.nombre}_${client.apellido}`.toLowerCase();
         }
 
+        async recoverPassword(recoverPasswordDto: RecoverPasswordDto): Promise<User>{
+
+            if (recoverPasswordDto.password !== recoverPasswordDto.cPassword) {
+                throw new BadRequestException('Las contraseñas no coinciden');
+            }
+            
+            const user = await this.usersRepository.findOne({where: {username:recoverPasswordDto.username}})
+
+            if (!user) {
+                throw new NotFoundException('Usuario no encontrado');
+            }
+            
+            const hashedPassword = await bcrypt.hash(recoverPasswordDto.password, 10); // o el método que uses
+
+            user.password = hashedPassword;
+            return await this.usersRepository.save(user);
+        }
 
         
         }
