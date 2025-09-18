@@ -9,6 +9,9 @@ export const seedCategory = async (dataSource: DataSource) => {
 
     const categories = [
     {
+        name: 'Accesorios'
+    },
+    {
         name: 'Bombas',
     },
     {
@@ -17,16 +20,6 @@ export const seedCategory = async (dataSource: DataSource) => {
     {
         name: 'Válvulas',
     },
-    {
-        name: 'Mangueras',
-    },
-    {
-        name: 'Cilindros'
-    },
-    {
-        name: 'Accesorios'
-    }
-
 ];
 
   // Insertar categorias si no existen

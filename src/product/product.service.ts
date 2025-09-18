@@ -59,15 +59,18 @@ export class ProductService {
     
             // Crear el producto directamente con la URL de la imagen si existe
             const newProduct = this.productsRepository.create({
-                ...createProductDto,
-                category,
-                imgUrl: imageUrl,
+                name: createProductDto.name,
+                description: createProductDto.description,
+                price: createProductDto.price,
+                stock: createProductDto.stock,
+                category, 
+                imgUrl: imageUrl
             });
     
             // Guardar la clase y esperar su confirmación
             const savedProduct = await this.productsRepository.save(newProduct);
     
-            return savedProduct;
+            return ResponseProductDto.fromEntity(savedProduct);
         } catch (error) {
             if (error instanceof QueryFailedError && error.driverError?.code === '23505') {
                 throw new HttpException(
@@ -83,6 +86,7 @@ export class ProductService {
         return await this.productsRepository.find({
             take: limit,
             skip: (page - 1) * limit,
+            relations: ['category']
         });
     }
 
@@ -91,14 +95,10 @@ export class ProductService {
     const products = await this.productsRepository.find({
         take: limit,
         skip: (page - 1) * limit,
+        relations: ['category']
     });
 
-    return products.map(product => ({
-        name: product.name,
-        description: product.description,
-        imgUrl: product.imgUrl,
-        categoryId: product.categoryId,
-    }));
+    return products.map(product => ResponseProductDto.fromEntity(product));
 }
 
 
@@ -114,7 +114,7 @@ export class ProductService {
             throw new NotFoundException(`Producto con ID ${productId} no encontrado`);
         }
 
-        return product
+        return ResponseProductDto.fromEntity(product);
     }
     
 
@@ -164,7 +164,7 @@ export class ProductService {
         }
 
         // Eliminar la imagen anterior si se proporciona un archivo nuevo
-        if (file && product.imgUrl) {
+        if (file && product.imgUrl && product.imgUrl !== 'default-image-url.jpg') {
             try {
                 await this.cloudinaryService.deleteFile(product.imgUrl);
             } catch (error) {
@@ -175,13 +175,16 @@ export class ProductService {
 
         // Subir nueva imagen si se proporciona un archivo
         if (file) {
-            const newImgUrl = await this.cloudinaryService.uploadFile(file.buffer, file.originalname);
+            const newImgUrl = await this.cloudinaryService.uploadFile(file.buffer, 'product', file.originalname);
             product.imgUrl = newImgUrl; // Reemplazar la URL de la imagen actual
         }
 
-        // Asignar las propiedades de updateProductDto al producto (sin necesidad de comprobar cada campo manualmente)
-        Object.assign(product, updateProductDto);
-        console.log("propiedades de updateProductDto",Object.assign(product, updateProductDto));
+
+        // Actualizar otros campos
+        if (updateProductDto.description !== undefined) product.description = updateProductDto.description;
+        if (updateProductDto.price !== undefined) product.price = updateProductDto.price;
+        if (updateProductDto.stock !== undefined) product.stock = updateProductDto.stock;
+        if (updateProductDto.state !== undefined) product.state = updateProductDto.state;
 
         if (updateProductDto.categoryId) {
             const category = await this.categoryService.findOne(
@@ -199,10 +202,7 @@ export class ProductService {
                 ...product, // Todos los datos existentes
             });
 
-            // Crear el DTO de respuesta para la categoría
-            const categoryDto = new ResponseCategoryDto(updateProduct.category.id, updateProduct.category.name);
-
-            return new ResponseProductDto();
+            return ResponseProductDto.fromEntity(updateProduct);
         } catch (error) {
             if (error instanceof QueryFailedError && error.driverError?.code === '23505') {
                 throw new HttpException(

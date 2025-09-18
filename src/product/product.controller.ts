@@ -29,7 +29,7 @@ export class ProductsController {
     @ApiSecurity('bearer')
     @ApiConsumes('multipart/form-data')
     @ApiBody({
-        description: 'Datos para actualizar el producto, incluyendo la opción de subir una imagen',
+        description: 'Datos para crear un nuevo producto, incluyendo la opción de subir una imagen',
         schema: {
             type: 'object',
             properties: {
@@ -38,12 +38,12 @@ export class ProductsController {
                 price: { type: 'number' },
                 stock: { type: 'number' },
                 categoryId: { type: 'string' },
-                imgUrl: { type: 'string', format: 'binary' },
+                file: { type: 'string', format: 'binary' },
 
             },
         },
     })
-    @UseInterceptors(FileInterceptor('imgUrl', { limits: { fileSize: 10 * 1024 * 1024 } }))
+    @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 10 * 1024 * 1024 } }))
     async create(@Body() createProductDto: CreateProductDto, @UploadedFile() file?: Express.Multer.File): Promise<ResponseProductDto> {
 
         // Llamar al servicio para crear el product

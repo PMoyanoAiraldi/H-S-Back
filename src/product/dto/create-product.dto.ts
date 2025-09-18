@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
 import { IsNotEmpty, IsNumber, IsPositive, IsString, IsUUID } from "class-validator";
 
 export class CreateProductDto {
@@ -14,21 +15,24 @@ export class CreateProductDto {
     description: string;
 
     @ApiProperty({ description: 'El precio del producto', example: 250.50,})
+    @Transform(({ value }) => {
+        // Convertir string a número si es necesario
+        const num = typeof value === 'string' ? parseFloat(value) : value;
+        return isNaN(num) ? value : num;
+    })
     @IsNumber({ maxDecimalPlaces: 2 }, { message: 'El precio debe ser un número con hasta dos decimales.' })
     @IsPositive({ message: 'El precio debe ser un número positivo.' })
     price: number;
 
     @ApiProperty({ description: 'La cantidad de stock del producto', example: 300,})
-    @IsNumber()
-    @IsPositive({ message: 'El stock debe ser un número positivo.' })
-    stock: number;
-
-    @ApiProperty({
-        type: 'string',
-        format: 'binary', 
-        description: 'Imagen del producto',
+    @Transform(({ value }) => {
+        // Convertir string a número si es necesario
+        const num = typeof value === 'string' ? parseInt(value) : value;
+        return isNaN(num) ? value : num;
     })
-    imgUrl?: string;
+    @IsPositive({ message: 'El stock debe ser un número positivo.' })
+    @IsNumber({}, { message: 'El stock debe ser un número válido.' })
+    stock: number;
 
     
     @ApiProperty({ 
