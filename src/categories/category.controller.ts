@@ -47,8 +47,8 @@ export class CategoryController {
     @Get()
     @ApiOperation({ summary: 'Listar todas las categorías' })
     @ApiResponse({ status: 200, description: 'Lista de categorías', type: [Category] })
-    @UseGuards(AuthGuard, RolesGuard)
-    @Roles('admin')
+    // @UseGuards(AuthGuard, RolesGuard)
+    // @Roles('admin')
     @ApiSecurity('bearer')
     async findAll(): Promise<Category[]> {
         return this.categoryService.findAll();
