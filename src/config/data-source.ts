@@ -20,7 +20,7 @@ const PostgresDataSource: DataSourceOptions = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     //url: process.env.DB_URL,
-    ssl: false,
+    ssl: true,
     // ssl: {
     //     rejectUnauthorized: false, 
     // },

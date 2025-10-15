@@ -20,6 +20,9 @@ export const seedCategory = async (dataSource: DataSource) => {
     {
         name: 'Válvulas',
     },
+    {
+        name: 'Cilindros',
+    },
 ];
 
   // Insertar categorias si no existen
