@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { FileUploadDto } from './dto/file-upload.dto';
 import { CloudinaryService } from './cloudinary.service';
 import { ProductService } from 'src/product/product.service';
-import { CategoryService } from 'src/linea/linea.service';
+import {  LineaService } from 'src/linea/linea.service';
 
 
 
@@ -11,12 +11,12 @@ export class FileUploadService {
     constructor(
         private readonly cloudinaryService: CloudinaryService,
         private readonly productService: ProductService,
-        private readonly categoryService: CategoryService
+        private readonly lineaService: LineaService
     ){}
 
     async uploadFile(
         file: Express.Multer.File, 
-        entityType: 'product' | 'category',
+        entityType: 'product' | 'linea',
         entityId?: string
     ): Promise<{ imgUrl: string }>{
     
@@ -24,7 +24,7 @@ export class FileUploadService {
             throw new Error('El archivo proporcionado no es válido');
         }
 
-        if (!['product', 'category'].includes(entityType)) {
+        if (!['product', 'linea'].includes(entityType)) {
             throw new Error('El tipo de entidad proporcionado no es válido');
         }
 
@@ -51,26 +51,25 @@ export class FileUploadService {
                 throw new Error('Producto no encontrado');
             }
             
-            if (!product.categoryId) {
-                throw new Error('La categoría no existe');
-            }
+            // if (!product.categoryId) {
+            //     throw new Error('La categoría no existe');
+            // }
             
         // Actualizamos solo la propiedad imagen, manteniendo las demás propiedades intactas
         await this.productService.update(entityId, {
             ...product,   // Propiedades existentes
             imgUrl: url, // Actualizamos solo la imagen
-            categoryId: product.categoryId,
+            //categoryId: product.categoryId,
         });
             break;
 
-        case 'category':
+        case 'linea':
             // Valida si `entityId` está presente
                 if (!entityId) {
-                    throw new Error('No se proporcionó un ID de categoria para actualizar.');
+                    throw new Error('No se proporcionó un ID de la linea para actualizar.');
                 }
 
-            // Llamar a `actualizarUsuarios` pasando la URL en el DTO
-            await this.categoryService.update(entityId, { image: url });
+            await this.lineaService.update(entityId, { image: url });
             break;
 
         default:
@@ -94,8 +93,8 @@ export class FileUploadService {
         switch (entityType) {
             case 'product':
                 return 'product';
-            case 'category':
-                return 'category';
+            case 'linea':
+                return 'linea';
             default:
                 throw new Error('Tipo de entidad no compatible');
         }

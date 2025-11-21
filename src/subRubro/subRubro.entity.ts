@@ -18,9 +18,6 @@ export class SubRubro {
     @Column({ unique: true })
     nombre: string; // Del CSV "Rubros" - Columna "Nombre"
 
-    // @OneToMany(() => Linea, (linea) => linea.subRubro)
-    // linea: Linea[];
-
     @ManyToOne(() => Rubro, (rubro) => rubro.subRubros)
     rubro: Rubro;
 

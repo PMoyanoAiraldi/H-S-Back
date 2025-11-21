@@ -18,9 +18,6 @@ export class Rubro {
     @Column({ unique: true })
     nombre: string; // Del CSV "Rubros" - Columna "Nombre"
 
-    // @OneToMany(() => Linea, (linea) => linea.rubro)
-    // linea: Linea[];
-
     @OneToMany(() => SubRubro, (subRubro) => subRubro.rubro)
     subRubros: SubRubro[];
 

@@ -9,7 +9,7 @@ import { FileUploadService } from "src/file-upload/file-upload.service";
 import { ProductService } from "src/product/product.service";
 import { Linea } from "./linea.entity";
 import { LineaService } from "./linea.service";
-import { LineaController } from "./category.controller";
+import { LineaController } from "./linea.controller";
 
 
 

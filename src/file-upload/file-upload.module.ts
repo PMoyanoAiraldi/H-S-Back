@@ -4,7 +4,7 @@ import { CloudinaryService } from './cloudinary.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/users.entity';
 import { UserService } from 'src/user/users.service';
-import { CategoryService } from 'src/linea/linea.service';
+import { LineaService } from 'src/linea/linea.service';
 
 
 @Module({
@@ -12,7 +12,7 @@ import { CategoryService } from 'src/linea/linea.service';
     TypeOrmModule.forFeature([User]),
   
   ],
-  providers: [FileUploadService,UserService, CloudinaryService,  CategoryService],
+  providers: [FileUploadService,UserService, CloudinaryService,  LineaService],
   controllers: [],
   exports: [FileUploadService,  CloudinaryService]
 })

@@ -9,9 +9,9 @@ import { UserModule } from './user/users.module';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { OrderProductModule } from './orderProduct/orderProduct.module';
-import { CategoryModule } from './linea/category.module';
 import { AuthModule } from './auth/auth.module';
 import { SeedModule } from './seeds/seeds.module';
+import { LineaModule } from './linea/linea.module';
 
 @Module({
   imports: [
@@ -31,7 +31,7 @@ import { SeedModule } from './seeds/seeds.module';
     ProductModule,
     OrderModule,
     OrderProductModule,
-    CategoryModule,
+    LineaModule,
     AuthModule,
     SeedModule
   

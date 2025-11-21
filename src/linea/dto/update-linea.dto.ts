@@ -5,7 +5,7 @@ export class UpdateLineaDto {
     
     @ApiProperty({ description: "El nombre de la linea", required: true})
     @IsString()
-    @IsNotEmpty()
+    @IsOptional()
     nombre?: string;
 
     @ApiProperty({
@@ -13,13 +13,14 @@ export class UpdateLineaDto {
         format: 'binary', 
         description: 'Imagen de la linea del producto',
     })
+    @IsOptional()
     image?: string;
 
 
     @ApiProperty({ description: "El código de la linea", required: true})
     @IsNumber()
-    @IsNotEmpty()
-    codigo: number;
+    @IsOptional()
+    codigo?: number;
 
     @ApiProperty({ description: "Estado de la linea", required: false })
     @IsOptional()
