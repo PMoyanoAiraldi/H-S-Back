@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsPositive, IsString, IsUUID } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUUID } from "class-validator";
 
 export class ResponseProductDto {
 
@@ -10,18 +10,31 @@ export class ResponseProductDto {
     @ApiProperty({ description: "El nombre del producto", required: true })
     @IsString()
     @IsNotEmpty()
-    name: string;
+    nombre: string;
+
+    @ApiProperty({ description: "El codigo del producto", required: true })
+    @IsNumber()
+    @IsNotEmpty()
+    codigo: number; 
 
     @ApiProperty({ description: "La descripción del producto", required: true })
     @IsString()
     @IsNotEmpty()
-    description: string;
+    descripcion: string;
 
-    @ApiProperty({ description: "Precio del producto" })
-    price: number;
+    @ApiProperty({ description: "El código ALt1 del producto", required: true })
+    @IsString()
+    @IsOptional()
+    codigoAlternativo1: string;
 
-    @ApiProperty({ description: "Stock del producto" })
-    stock: number;
+    @ApiProperty({ description: "El código ALt2 del producto", required: true })
+    @IsString()
+    @IsOptional()
+    codigoAlternativo2: string;
+
+
+    // @ApiProperty({ description: "Stock del producto" })
+    // stock: number;
 
 
     @ApiProperty({
@@ -34,28 +47,16 @@ export class ResponseProductDto {
     @ApiProperty({ description: "Estado del producto" })
     state: boolean;
 
-    @ApiProperty({ 
-        description: 'ID de la categoría a la que pertenece el producto', 
-        example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
-        required: true
-    })
-    @IsUUID('4', { message: 'El categoryId debe ser un UUID válido.' })
-    categoryId: string;
-    
-    @ApiProperty({ description: "Nombre de la categoría" })
-    categoryName: string;
+    @ApiProperty({ description: "Nombre de la marca del producto" })
+    marcaNombre: string;
 
-    static fromEntity(product: any): ResponseProductDto {
-        const dto = new ResponseProductDto();
-        dto.id = product.id;
-        dto.name = product.name;
-        dto.description = product.description;
-        dto.price = product.price;
-        dto.stock = product.stock;
-        dto.imgUrl = product.imgUrl;
-        dto.state = product.state;
-        dto.categoryId = product.category?.id;
-        dto.categoryName = product.category?.name;
-        return dto;
-    }
+    @ApiProperty({ description: "Nombre de la linea del producto" })
+    lineaNombre: string;
+
+    @ApiProperty({ description: "Nombre del rubro del producto" })
+    rubroNombre: string;
+
+    @ApiProperty({ description: "Nombre del sub rubro del producto" })
+    subRubroNombre: string;
+
 }

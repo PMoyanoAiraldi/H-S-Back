@@ -1,13 +1,13 @@
-import { Category } from 'src/categories/category.entity';
+import { Linea } from 'src/linea/linea.entity';
 import { DataSource, getRepository } from 'typeorm';
 
 
 
 
 export const seedCategory = async (dataSource: DataSource) => {
-    const categoryRepository = dataSource.getRepository(Category);
+    const lineaRepository = dataSource.getRepository(Linea);
 
-    const categories = [
+    const linea = [
     {
         name: 'Accesorios'
     },
@@ -26,7 +26,7 @@ export const seedCategory = async (dataSource: DataSource) => {
 ];
 
   // Insertar categorias si no existen
-    for (const category of categories) {
+    for (const category of linea) {
         const existingCategory = await categoryRepository.findOne({
         where: { name: category.name },
         });

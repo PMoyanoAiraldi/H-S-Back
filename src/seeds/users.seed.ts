@@ -17,12 +17,12 @@ export const seedUsers = async (dataSource: DataSource) => {
 
   const users = [
     {
-      username: 'Administrador',
+      nombre: 'Administrador',
       password: hashedPasswordAdmin, // Asignando la contraseña hasheada
       rol: rolEnum.ADMIN,
     },
     {
-      username: 'Cliente Juan',
+      nombre: 'Cliente Juan',
       password: hashedPasswordCliente, // Asignando la contraseña hasheada
       rol: rolEnum.CLIENTE,
     },
@@ -31,14 +31,14 @@ export const seedUsers = async (dataSource: DataSource) => {
   // Insertar usuarios si no existen
   for (const user of users) {
     const existingUser = await userRepository.findOne({
-      where: { username: user.username }, // Verifica si el usuario ya existe por su nombre de usuario
+      where: { nombre: user.nombre }, // Verifica si el usuario ya existe por su nombre de usuario
     });
 
     if (!existingUser) {
       await userRepository.save(user);
-      console.log(`El usuario "${user.username}" no existe y se insertará.`);
+      console.log(`El usuario "${user.nombre}" no existe y se insertará.`);
     } else {
-      console.log(`El usuario "${user.username}" ya existe y no se insertará.`);
+      console.log(`El usuario "${user.nombre}" ya existe y no se insertará.`);
     }
   }
 };

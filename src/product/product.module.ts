@@ -7,7 +7,7 @@ import { Order } from "src/order/order.entity";
 import { Category } from "src/categories/category.entity";
 import { ProductService } from "./product.service";
 import { ProductsController } from "./product.controller";
-import { CategoryService } from "src/categories/category.service";
+import { CategoryService } from "src/linea/linea.service";
 import { CloudinaryService } from "src/file-upload/cloudinary.service";
 
 @Module({

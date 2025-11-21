@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { FileUploadDto } from './dto/file-upload.dto';
 import { CloudinaryService } from './cloudinary.service';
 import { ProductService } from 'src/product/product.service';
-import { CategoryService } from 'src/categories/category.service';
+import { CategoryService } from 'src/linea/linea.service';
 
 
 

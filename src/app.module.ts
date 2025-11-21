@@ -9,7 +9,7 @@ import { UserModule } from './user/users.module';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { OrderProductModule } from './orderProduct/orderProduct.module';
-import { CategoryModule } from './categories/category.module';
+import { CategoryModule } from './linea/category.module';
 import { AuthModule } from './auth/auth.module';
 import { SeedModule } from './seeds/seeds.module';
 

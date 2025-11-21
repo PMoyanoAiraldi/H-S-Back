@@ -20,9 +20,9 @@ const PostgresDataSource: DataSourceOptions = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     //url: process.env.DB_URL,
-    ssl: true,
+    ssl: false,
     // ssl: {
-    //     rejectUnauthorized: false, 
+    // rejectUnauthorized: false,
     // },
     //dropSchema: true,
     synchronize: true,
@@ -32,4 +32,4 @@ const PostgresDataSource: DataSourceOptions = {
 
 export const postgresDataSourceConfig = registerAs('postgres', () => PostgresDataSource)
 
-export const connectionSource = new DataSource(PostgresDataSource as DataSourceOptions)
+export const connectionSource = new DataSource(PostgresDataSource)

@@ -10,16 +10,14 @@ import { RecoverPasswordDto } from "./dto/recover-password.dto";
 export class UserService {
     constructor(
         @InjectRepository(User)
-        private readonly usersRepository: Repository<User>,
-        // private readonly cloudinaryService: CloudinaryService,
-        
+        private readonly usersRepository: Repository<User>,        
     ) { }
 
     async createUser(createUser: CreateUserDto): Promise<User>{
         // Verificar si el correo ya existe
         try{
             console.log('Datos recibidos:', createUser);
-        const userExisting = await this.usersRepository.findOne({ where: { username: createUser.username } });
+        const userExisting = await this.usersRepository.findOne({ where: { nombre: createUser.username } });
         if (userExisting) {
             throw new HttpException('El cliente ya está registrado', 400);
         }
@@ -53,14 +51,14 @@ export class UserService {
             const createdUsers: User[] = [];
             for (const client of clients) {
                 const existingUser = await this.usersRepository.findOne({ 
-                where: { username: client.username } 
+                where: { nombre: client.nombre } 
                 });
         
                 if (!existingUser) {
                 const hashedPassword = await bcrypt.hash('ClaveTemporal123!', 10);
                 
                 const newUser = this.usersRepository.create({
-                    username: this.generateUsername(client),
+                    nombre: this.generateUsername(client),
                     password: hashedPassword,
                     mustChangePassword: true, // Obligar cambio de clave en primer login
                 });
@@ -84,7 +82,7 @@ export class UserService {
                 throw new BadRequestException('Las contraseñas no coinciden');
             }
             
-            const user = await this.usersRepository.findOne({where: {username:recoverPasswordDto.username}})
+            const user = await this.usersRepository.findOne({where: {nombre:recoverPasswordDto.username}})
 
             if (!user) {
                 throw new NotFoundException('Usuario no encontrado');

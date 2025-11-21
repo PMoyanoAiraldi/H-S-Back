@@ -4,10 +4,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { ResponseProductDto } from "./dto/response-product.dto";
-import { CategoryService } from "src/categories/category.service";
+import { CategoryService } from "src/linea/linea.service";
 import { CloudinaryService } from "src/file-upload/cloudinary.service";
 import { UpdateProductDto } from "./dto/update-product.dto";
-import { ResponseCategoryDto } from "src/categories/dto/response-category.dto";
+import { ResponseCategoryDto } from "src/linea/dto/response-linea.dto";
 
 
 @Injectable()

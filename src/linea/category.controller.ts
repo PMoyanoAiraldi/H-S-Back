@@ -1,16 +1,16 @@
 import { Body, Controller, Get, Param, Post, Put, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
-import { CategoryService } from "./category.service";
+import { CategoryService } from "./linea.service";
 import { FileUploadService } from "src/file-upload/file-upload.service";
 import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiSecurity, ApiTags } from "@nestjs/swagger";
 import { AuthGuard } from "src/guard/auth.guard";
 import { Roles } from "src/decorators/roles.decorator";
 import { RolesGuard } from "src/guard/roles.guard";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { CreateCategoryDto } from "./dto/create-category.dto";
-import { ResponseCategoryDto } from "./dto/response-category.dto";
+import { CreateCategoryDto } from "./dto/create-linea.dto";
+import { ResponseCategoryDto } from "./dto/response-linea.dto";
 import { Category } from "./category.entity";
 import { Products } from "src/product/product.entity";
-import { UpdateCategoryDto } from "./dto/update-category.dto";
+import { UpdateCategoryDto } from "./dto/update-linea.dto";
 
 @ApiTags('Category')
 @Controller('category')
