@@ -12,7 +12,7 @@ export class Order{
     userId: string;
     
     
-    @ManyToOne(() => User, (user) => user.order)
+    @ManyToOne(() => User, (user) => user.orders)
     user: User;
 
     @OneToMany(() => OrderProduct, (orderProducts) => orderProducts.orders, { cascade: true })

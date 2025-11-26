@@ -30,14 +30,14 @@ export const seedLinea = async (dataSource: DataSource) => {
     },
 ];
 
-  // Insertar categorias si no existen
+  // Insertar lineas si no existen
     for (const lineas of linea) {
         const existingLinea = await lineaRepository.findOne({
         where: { nombre: lineas.nombre },
         });
 
         if (!existingLinea) {
-        await lineaRepository.save(linea);
+        await lineaRepository.save(lineas);
         console.log(`La linea "${lineas.nombre}" no existe y se insertará.`);
         } else {
         console.log(`La linea "${lineas.nombre}" ya existe y no se insertará.`);

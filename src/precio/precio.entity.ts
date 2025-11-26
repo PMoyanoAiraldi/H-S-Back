@@ -9,8 +9,8 @@ export class Precio {
     @ManyToOne(() => Products, (product) => product.precios)
     producto: Products;
 
-    @Column()
-    listaPrecio: string; // Del CSV "Precios" - Columna "Lista"
+    @Column('int')
+    listaPrecio: number; // Del CSV "Precios" - Columna "Lista"
 
     @Column('decimal', { precision: 10, scale: 2 })
     precio: number; // Del CSV "Precios" - Columna "Valor"

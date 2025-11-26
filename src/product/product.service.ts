@@ -4,10 +4,11 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { ResponseProductDto } from "./dto/response-product.dto";
-import { CategoryService } from "src/linea/linea.service";
 import { CloudinaryService } from "src/file-upload/cloudinary.service";
 import { UpdateProductDto } from "./dto/update-product.dto";
-import { ResponseCategoryDto } from "src/linea/dto/response-linea.dto";
+import { LineaService } from "src/linea/linea.service";
+import { Precio } from "src/precio/precio.entity";
+
 
 
 @Injectable()
@@ -15,7 +16,9 @@ export class ProductService {
     constructor(
         @InjectRepository(Products)
         private readonly productsRepository: Repository<Products>,
-        private readonly categoryService: CategoryService,
+        @InjectRepository(Precio)  
+        private readonly precioRepository: Repository<Precio>,
+        private readonly lineaService: LineaService,
         private readonly cloudinaryService: CloudinaryService
                 
     ) { }
@@ -24,26 +27,39 @@ export class ProductService {
         try {
             console.log('Datos del DTO recibidos:', createProductDto);
             
-            const normalizedName = createProductDto.name.trim().toLowerCase();
+            const normalizedName = createProductDto.nombre.trim().toLowerCase();
     
             const productExist = await this.productsRepository
                 .createQueryBuilder('product')
-                .where('LOWER(product.name) = :name', { name: normalizedName })
+                .where('LOWER(product.nombre) = :nombre', { nombre: normalizedName })
                 .getOne();
     
             if (productExist) {
                 throw new HttpException(
-                    `El producto con el nombre "${createProductDto.name}" ya existe.`,
+                    `El producto con el nombre "${createProductDto.nombre}" ya existe.`,
                     HttpStatus.BAD_REQUEST,
                 );
             }
     
-            const category = await this.categoryService.findOne(createProductDto.categoryId);
-            if (!category) {
-                throw new NotFoundException(`Categoría con ID ${createProductDto.categoryId} no encontrada`);
+            const linea = await this.lineaService.findOne(createProductDto.lineaId);
+            if (!linea) {
+                throw new NotFoundException(`Linea con ID ${createProductDto.lineaId} no encontrada`);
             }
-            console.log('Categoría encontrada:', category);
+            console.log('Linea encontrada:', linea);
     
+            //Validamos y obtenemos el precio si se proporciona
+            let precio = null;
+                    if (createProductDto.precioId) {
+                        precio = await this.precioRepository.findOne({ 
+                            where: { id: createProductDto.precioId } 
+                        });
+                        if (!precio) {
+                            throw new NotFoundException(`Precio con ID ${createProductDto.precioId} no encontrado`);
+                        }
+                        console.log('Precio encontrado:', precio);
+            }
+
+
             // Subir la imagen si existe un archivo
             let imageUrl: string | undefined;
             if (file) {
@@ -59,18 +75,30 @@ export class ProductService {
     
             // Crear el producto directamente con la URL de la imagen si existe
             const newProduct = this.productsRepository.create({
-                name: createProductDto.name,
-                description: createProductDto.description,
-                price: createProductDto.price,
-                stock: createProductDto.stock,
-                category, 
-                imgUrl: imageUrl
+                nombre: createProductDto.nombre,
+                descripcion: createProductDto.descripcion,
+                codigo: createProductDto.codigo,
+                codigoAlternativo1: createProductDto.codigoAlternativo1,
+                codigoAlternativo2: createProductDto.codigoAlternativo2,
+                marca: { id: createProductDto.marcaId }, 
+                linea: createProductDto.lineaId ? { id: createProductDto.lineaId } : undefined, 
+                rubro: { id: createProductDto.rubroId }, 
+                subRubro: createProductDto.subrubroId ? { id: createProductDto.subrubroId } : undefined, 
+                imgUrl: imageUrl || createProductDto.imgUrl || 'default-image-url.jpg',
+                precios: precio ? [precio] : [] // Asociar el precio si existe
             });
     
             // Guardar la clase y esperar su confirmación
             const savedProduct = await this.productsRepository.save(newProduct);
     
-            return ResponseProductDto.fromEntity(savedProduct);
+
+            // Cargar las relaciones para el response
+        const productWithRelations = await this.productsRepository.findOne({
+            where: { id: savedProduct.id },
+            relations: ['marca', 'linea', 'rubro', 'subRubro', 'precios']
+        });
+
+            return ResponseProductDto.fromEntity(productWithRelations);
         } catch (error) {
             if (error instanceof QueryFailedError && error.driverError?.code === '23505') {
                 throw new HttpException(
@@ -86,7 +114,7 @@ export class ProductService {
         return await this.productsRepository.find({
             take: limit,
             skip: (page - 1) * limit,
-            relations: ['category']
+            relations: ['linea']
         });
     }
 
@@ -95,7 +123,7 @@ export class ProductService {
     const products = await this.productsRepository.find({
         take: limit,
         skip: (page - 1) * limit,
-        relations: ['category']
+        relations: ['linea']
     });
 
     return products.map(product => ResponseProductDto.fromEntity(product));
@@ -105,7 +133,7 @@ export class ProductService {
     async findOne(productId: string): Promise<ResponseProductDto> {
         const product = await this.productsRepository.findOne({
             where: { id: productId },
-            relations: ['category'],
+            relations: ['linea'],
         });
 
         console.log('Resultado de la consulta:', product);
@@ -135,7 +163,7 @@ export class ProductService {
     async update(id: string, updateProductDto: UpdateProductDto, file?: Express.Multer.File): Promise<ResponseProductDto> {
         const product = await this.productsRepository.findOne({
             where: { id }, 
-            relations: ['category'], // Cargar la relación de categoría
+            relations: ['marca', 'linea', 'rubro', 'subRubro', 'precios'], 
         });
 
         if (!product) {
@@ -143,76 +171,140 @@ export class ProductService {
         }
 
         // Verificar si el nombre ya existe en otro producto
-        if (updateProductDto.name && updateProductDto.name.trim()) {
-            const normalizedName = updateProductDto.name.trim().toLowerCase();
+        if (updateProductDto.nombre?.trim()) {
+            const normalizedName = updateProductDto.nombre.trim().toLowerCase();
 
             const productExist = await this.productsRepository
                 .createQueryBuilder('product')
-                .where('LOWER(product.name) = :name', { name: normalizedName })
+                .where('LOWER(product.nombre) = :nombre', { nombre: normalizedName })
+                .andWhere('product.id != :id', { id }) // IMPORTANTE: Excluir el producto actual
                 .getOne();
 
             if (productExist) {
                 throw new HttpException(
-                    `Ya existe un producto con el nombre "${updateProductDto.name}".`,
+                    `Ya existe un producto con el nombre "${updateProductDto.nombre}".`,
                     HttpStatus.BAD_REQUEST,
                 );
             }
-        }
-        // Normalización del nombre antes de guardar
-        if (updateProductDto.name) {
-            product.name = updateProductDto.name.trim().toLowerCase();
+            product.nombre = normalizedName
         }
 
-        // Eliminar la imagen anterior si se proporciona un archivo nuevo
-        if (file && product.imgUrl && product.imgUrl !== 'default-image-url.jpg') {
+         // Actualizar otros campos
+        if (updateProductDto.descripcion !== undefined) product.descripcion = updateProductDto.descripcion;
+        if (updateProductDto.codigo !== undefined) product.codigo = updateProductDto.codigo;
+        if (updateProductDto.codigoAlternativo1 !== undefined) product.codigoAlternativo1 = updateProductDto.codigoAlternativo1;
+        if (updateProductDto.codigoAlternativo2 !== undefined) product.codigoAlternativo2 = updateProductDto.codigoAlternativo2;        
+        if (updateProductDto.state !== undefined) product.state = updateProductDto.state;
+
+        
+        if (file) {
+            
+            if (product.imgUrl && product.imgUrl !== 'default-image-url.jpg') {// Eliminar la imagen anterior si se proporciona un archivo nuevo
             try {
                 await this.cloudinaryService.deleteFile(product.imgUrl);
             } catch (error) {
                 console.error('Error al eliminar la imagen anterior:', error);
-                throw new InternalServerErrorException('Error al eliminar la imagen anterior');
             }
         }
 
-        // Subir nueva imagen si se proporciona un archivo
-        if (file) {
-            const newImgUrl = await this.cloudinaryService.uploadFile(file.buffer, 'product', file.originalname);
-            product.imgUrl = newImgUrl; // Reemplazar la URL de la imagen actual
-        }
-
-
-        // Actualizar otros campos
-        if (updateProductDto.description !== undefined) product.description = updateProductDto.description;
-        if (updateProductDto.price !== undefined) product.price = updateProductDto.price;
-        if (updateProductDto.stock !== undefined) product.stock = updateProductDto.stock;
-        if (updateProductDto.state !== undefined) product.state = updateProductDto.state;
-
-        if (updateProductDto.categoryId) {
-            const category = await this.categoryService.findOne(
-                updateProductDto.categoryId,
-            );
-            if (!category) {
-                throw new NotFoundException(`Categoría con ID ${updateProductDto.categoryId} no encontrada`);
-            }
-            product.category = category;
-        }
-
+        // Subir nueva imagen
         try {
-            // Guardar el producto con las actualizaciones realizadas
-            const updateProduct = await this.productsRepository.save({
-                ...product, // Todos los datos existentes
-            });
-
-            return ResponseProductDto.fromEntity(updateProduct);
+            product.imgUrl = await this.cloudinaryService.uploadFile(
+                file.buffer,
+                'product',
+                file.originalname
+            );
         } catch (error) {
-            if (error instanceof QueryFailedError && error.driverError?.code === '23505') {
-                throw new HttpException(
-                    'Ya existe un producto con ese nombre.',
-                    HttpStatus.BAD_REQUEST,
-                );
-            }
-            throw error;
+            console.error('Error al subir la nueva imagen:', error);
+            throw new InternalServerErrorException('Error al subir la imagen');
         }
     }
 
+        // // Subir nueva imagen si se proporciona un archivo
+        // if (file) {
+        //     const newImgUrl = await this.cloudinaryService.uploadFile(file.buffer, 'product', file.originalname);
+        //     product.imgUrl = newImgUrl; // Reemplazar la URL de la imagen actual
+        // }
 
+
+        // Actualizar relaciones - OPTIMIZADO
+    await this.updateRelations(product, updateProductDto);
+
+    try {
+        // Guardar el producto actualizado
+        const updatedProduct = await this.productsRepository.save(product);
+
+        // Cargar todas las relaciones para el response
+        const productWithRelations = await this.productsRepository.findOne({
+            where: { id: updatedProduct.id },
+            relations: ['marca', 'linea', 'rubro', 'subRubro', 'precios']
+        });
+
+        return ResponseProductDto.fromEntity(productWithRelations);
+    } catch (error) {
+        if (error instanceof QueryFailedError && error.driverError?.code === '23505') {
+            throw new HttpException(
+                'Ya existe un producto con ese nombre.',
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+        throw error;
+    }
+}
+
+// Método privado para actualizar relaciones - EVITA CÓDIGO REPETITIVO
+private async updateRelations(product: Products, updateDto: UpdateProductDto): Promise<void> {
+        if (updateDto.lineaId) {
+            const linea = await this.lineaService.findOne(
+                updateDto.lineaId,
+            );
+            if (!linea) {
+                throw new NotFoundException(`Categoría con ID ${updateDto.lineaId} no encontrada`);
+            }
+            product.linea = linea;
+        }
+
+        // if (updateDto.marcaId) {
+        //     const marca = await this.marcaService.findOne(
+        //         updateDto.marcaId,
+        //     );
+        //     if (!marca) {
+        //         throw new NotFoundException(`Categoría con ID ${updateDto.marcaId} no encontrada`);
+        //     }
+        //     product.marca = marca;
+        // }
+
+    //     if (updateDto.rubroId) {
+    //     const rubro = await this.rubroService.findOne(updateDto.rubroId);
+    //     if (!rubro) {
+    //         throw new NotFoundException(`Rubro con ID ${updateDto.rubroId} no encontrado`);
+    //     }
+    //     product.rubro = rubro;
+    // }
+
+    // // Actualizar SubRubro
+    // if (updateDto.subrubroId) {
+    //     const subRubro = await this.subrubroService.findOne(updateDto.subrubroId);
+    //     if (!subRubro) {
+    //         throw new NotFoundException(`SubRubro con ID ${updateDto.subrubroId} no encontrado`);
+    //     }
+    //     product.subRubro = subRubro;
+    // }
+
+    // // Actualizar Precio
+    // if (updateDto.precioId) {
+    //     const precio = await this.precioRepository.findOne({
+    //         where: { id: updateDto.precioId }
+    //     });
+    //     if (!precio) {
+    //         throw new NotFoundException(`Precio con ID ${updateDto.precioId} no encontrado`);
+    //     }
+    //     // Si el precio ya está asociado, no hacer nada
+    //     // Si no, agregarlo al array
+    //     const precioExiste = product.precios?.some(p => p.id === precio.id);
+    //     if (!precioExiste) {
+    //         product.precios = product.precios ? [...product.precios, precio] : [precio];
+    //     }
+    // }
+}
 }

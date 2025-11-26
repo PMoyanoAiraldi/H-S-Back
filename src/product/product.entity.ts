@@ -37,7 +37,7 @@ export class Products {
      * El nombre del producto
      * @example 'Bombas'
      */
-    @Column({ length: 50, nullable: false })
+    @Column({ length: 100, nullable: false })
     nombre: string;
 
     /**

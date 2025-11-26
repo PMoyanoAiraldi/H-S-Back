@@ -17,7 +17,7 @@ export class AuthService {
     ) { }
     async login(loginUser: LoginUserDto): Promise<{ user: Partial<User>, token: string }> {
         const user = await this.usersRepository.findOne({ 
-            where: {username: loginUser.username},
+            where: {nombre: loginUser.username},
         });
         console.log('Usuario encontrado:', user);
 
@@ -63,7 +63,7 @@ export class AuthService {
     private async createToken(user: User) {
         const payload = {
             id: user.id,
-            username: user.username,
+            username: user.nombre,
             rol: user.rol
         };
         return this.jwtService.signAsync(payload)
