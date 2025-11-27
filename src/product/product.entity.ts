@@ -21,8 +21,8 @@ export class Products {
      * Código único del cliente (del CSV)
      * @example '1'
      */
-    @Column({ type: 'int', nullable: false, unique: true })
-    codigo: number;
+    @Column({ type: 'int', unique: true })
+    codigo?: number;
 
 
     @Column({ nullable: true })
