@@ -307,4 +307,56 @@ private async updateRelations(product: Products, updateDto: UpdateProductDto): P
     //     }
     // }
 }
+
+async findAllFiltered(filters: {
+    linea?: string;
+    rubro?: string;
+    marca?: string;
+    search?: string;
+    page: number;
+    limit: number;
+}) {
+    const query = this.productsRepository
+        .createQueryBuilder('product')
+        .leftJoinAndSelect('product.linea', 'linea')
+        .leftJoinAndSelect('product.rubro', 'rubro')
+        .leftJoinAndSelect('product.marca', 'marca')
+        .where('product.state = :state', { state: true });
+
+    // Filtrar por línea
+    if (filters.linea) {
+        query.andWhere('linea.nombre = :linea', { linea: filters.linea });
+    }
+
+    // Filtrar por rubro
+    if (filters.rubro) {
+        query.andWhere('rubro.nombre = :rubro', { rubro: filters.rubro });
+    }
+
+    // Filtrar por marca
+    if (filters.marca) {
+        query.andWhere('marca.nombre = :marca', { marca: filters.marca });
+    }
+
+    // Búsqueda por texto
+    if (filters.search) {
+        query.andWhere(
+            '(product.nombre ILIKE :search OR product.descripcion ILIKE :search OR CAST(product.codigo AS TEXT) LIKE :search)',
+            { search: `%${filters.search}%` }
+        );
+    }
+
+    // Paginación
+    const skip = (filters.page - 1) * filters.limit;
+    query.skip(skip).take(filters.limit);
+
+    const [products, total] = await query.getManyAndCount();
+
+    return {
+        data: products,
+        total,
+        page: filters.page,
+        lastPage: Math.ceil(total / filters.limit)
+    };
+}
 }

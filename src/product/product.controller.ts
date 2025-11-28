@@ -79,6 +79,25 @@ export class ProductsController {
         return this.productsService.getProducts(page, limit);
     }
 
+    @Get()
+    async findAll(
+    @Query('linea') linea?: string,
+    @Query('rubro') rubro?: string,
+    @Query('marca') marca?: string,
+    @Query('search') search?: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 50
+) {
+    return this.productsService.findAllFiltered({
+        linea,
+        rubro,
+        marca,
+        search,
+        page,
+        limit
+    });
+}
+
     @Get(':id')
     @ApiOperation({ summary: 'Obtener producto por ID' })
     @ApiResponse({ status: 200, description: 'Producto obtenida', type: Products })
