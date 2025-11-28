@@ -6,27 +6,32 @@ import { DataSource, getRepository } from 'typeorm';
 
 export const seedLinea = async (dataSource: DataSource) => {
     const lineaRepository = dataSource.getRepository(Linea);
-
+    
     const linea = [
     {
-        codigo: 220,   
-        nombre: 'BOMBAS A ENGRANAJES HS'
+        codigo: 319,   
+        nombre: 'BOMBAS A PISTONES REXROTH',
+        imgUrl: 'default-image-url.jpg',
     },
     {
         codigo: 12,
         nombre: 'MANGUERAS HIDRAULICAS',
+        imgUrl: 'default-image-url.jpg',
     },
     {
         codigo: 21,
         nombre: 'MOTOR ORBITAL M+S',
+        imgUrl: 'default-image-url.jpg',
     },
     {
         codigo: 26, 
         nombre: 'VALVULAS',
+        imgUrl: 'default-image-url.jpg',
     },
     {
         codigo: 11,
         nombre: 'CILINDROS HIDRAULICOS  Y  REPUESTOS',
+        imgUrl: 'default-image-url.jpg',
     },
 ];
 
@@ -43,4 +48,8 @@ export const seedLinea = async (dataSource: DataSource) => {
         console.log(`La linea "${lineas.nombre}" ya existe y no se insertará.`);
         }
     }
+
+    console.log('✅ Seed de líneas completado exitosamente.');
+
+    
 };

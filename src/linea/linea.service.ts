@@ -169,12 +169,12 @@ export class LineaService {
             descripcion: product.descripcion,
             codigoAlternativo1: product.codigoAlternativo1,
             codigoAlternativo2: product.codigoAlternativo2,
-            imgUrl: product.imgUrl,
+            imgUrl: product.imgUrl || 'default-image-url.jpg',
             state: product.state,
             marcaNombre: product.marca?.nombre,
             lineaNombre: product.linea?.nombre,
             rubroNombre: product.rubro?.nombre,
-            subRubroNombre: product.subRubro?.nombre,
+            //subRubroNombre: product.subRubro?.nombre,
         };
     }
 

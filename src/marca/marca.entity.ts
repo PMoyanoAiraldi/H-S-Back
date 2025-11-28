@@ -18,6 +18,9 @@ export class Marca {
     @Column({ unique: true })
     nombre: string; // Del CSV "Marcas" - Columna "Nombre"
 
+    @Column({ default: true }) 
+    state: boolean;
+
     @OneToMany(() => Products, (product) => product.marca)
     productos: Products[]
 }

@@ -1,5 +1,7 @@
 import { Linea } from 'src/linea/linea.entity';
+import { Marca } from 'src/marca/marca.entity';
 import { Products } from 'src/product/product.entity';
+import { Rubro } from 'src/rubro/rubro.entity';
 import { DataSource, getRepository } from 'typeorm';
 
 
@@ -7,10 +9,12 @@ export const seedProduct = async (dataSource: DataSource) => {
 
     const productRepository = dataSource.getRepository(Products);
     const lineaRepository = dataSource.getRepository(Linea);
+    const marcaRepository = dataSource.getRepository(Marca);
+    const rubroRepository = dataSource.getRepository(Rubro)
 
     try {
 
-    const bombas = await lineaRepository.findOne({ where: { nombre: 'BOMBAS A ENGRANAJES HS' } });
+    const bombas = await lineaRepository.findOne({ where: { nombre: 'BOMBAS A PISTONES REXROTH' } });
     const motores = await lineaRepository.findOne({ where: { nombre: 'MOTOR ORBITAL M+S' } });
     const valvulas = await lineaRepository.findOne({ where: { nombre: 'VALVULAS' } });
     const mangueras = await lineaRepository.findOne({ where: { nombre: 'MANGUERAS HIDRAULICAS' } });
@@ -22,6 +26,31 @@ export const seedProduct = async (dataSource: DataSource) => {
         }
 
         console.log('✅ Todas las lineas encontradas, creando productos...');
+    
+    const rexroth = await marcaRepository.findOne({ where: { nombre: 'REXROTH'}});
+    const graselli = await marcaRepository.findOne({ where: { nombre: 'GRASELLI JUAN E HIJOS S.A'}});
+    const verion = await marcaRepository.findOne({ where: { nombre: 'VERION'}});
+    const metalurgicaCesca = await marcaRepository.findOne({ where: { nombre: 'METALURGICA CESCA'}});
+    const moroAlberto = await marcaRepository.findOne({ where: { nombre: 'MORO ALBERTO'}});
+
+    if (!rexroth || !graselli || !verion || !metalurgicaCesca || !moroAlberto) {
+            throw new Error('❌ Alguna marca no existe. Revisá el seed de marcas.');
+        }
+
+        console.log('✅ Todas las marcas encontradas, creando productos...');
+
+    const pauny = await rubroRepository.findOne({ where: { nombre: 'PAUNY'}});
+    const motoresOrbitales = await rubroRepository.findOne({ where: { nombre: 'MOTORES ORBITALES STD'}});
+    const valvulasVarias = await rubroRepository.findOne({ where: { nombre: 'VALVULAS VARIAS'}});
+    const altaPresion = await rubroRepository.findOne({ where: { nombre: 'ALTA PRESION (R1)'}});
+    const cilindrosStd = await rubroRepository.findOne({ where: { nombre: 'CILINDROS STD'}});
+
+    if (!pauny || !motoresOrbitales || !valvulasVarias || !altaPresion || !cilindrosStd) {
+            throw new Error('❌ Algun rubro no existe. Revisá el seed de rubros.');
+        }
+
+        console.log('✅ Todos los rubros encontrados, creando productos...');    
+
 
     const products = [
     {
@@ -30,14 +59,11 @@ export const seedProduct = async (dataSource: DataSource) => {
         codigo: 16593,
         codigoAlternativo1: "910970025",
         codigoAlternativo2: "JM-RX-BP10",
-        marcaId: "",
-        lineaId: "",
-        rubroId:"",
-        subrubroId: "",
-        precioId: "",
         imgUrl: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1764110129/bomba_pistones_rexroth_vg72sc.png',
         state: true,
-        linea: bombas
+        linea: bombas,
+        marca: rexroth,
+        rubro: pauny
     },
     {
         nombre: 'MOTOR ORBITAL SERIE R 250CC -AX2- EJE Z6 1"- 7/8NF',
@@ -45,14 +71,11 @@ export const seedProduct = async (dataSource: DataSource) => {
         codigo: 11872,
         codigoAlternativo1: "MLHR250G4",
         codigoAlternativo2: "MLHR250G4",
-        marcaId: "",
-        lineaId: "",
-        rubroId:"",
-        subrubroId: "",
-        precioId: "",
         imgUrl: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1758140047/motor-hidraulico_dypniq.png',
         state: true,
-        linea: motores
+        linea: motores,
+        marca: verion,
+        rubro:motoresOrbitales
     },
     {
         nombre: 'VALVULA ANTIRRETORNO 1/2 NPT',
@@ -60,14 +83,11 @@ export const seedProduct = async (dataSource: DataSource) => {
         codigo: 1714,
         codigoAlternativo1: "0238-150",
         codigoAlternativo2: "0238-150",
-        marcaId: "",
-        lineaId: "",
-        rubroId:"",
-        subrubroId: "",
-        precioId: "",
         imgUrl: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1758140242/valvulas_hidraulicas_u9h3rz.png',
         state: true,
-        linea: valvulas
+        linea: valvulas,
+        marca: metalurgicaCesca,
+        rubro: valvulasVarias
     },
     {
         nombre: 'MANGUERA R1 - 1/4',
@@ -75,14 +95,11 @@ export const seedProduct = async (dataSource: DataSource) => {
         codigo: 75,
         codigoAlternativo1: "MH1/4R1",
         codigoAlternativo2: "MH1/4R1",
-        marcaId: "",
-        lineaId: "",
-        rubroId:"",
-        subrubroId: "",
-        precioId: "",
         imgUrl: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1758140428/mangueras-1_yvorlm.png',
         state: true,
-        linea: mangueras
+        linea: mangueras,
+        marca: graselli,
+        rubro: altaPresion
     },
     {
         nombre: 'CILINDRO STD. C/REG. 2,5"',
@@ -90,14 +107,11 @@ export const seedProduct = async (dataSource: DataSource) => {
         codigo: 273,
         codigoAlternativo1: "20253",
         codigoAlternativo2: "20253",
-        marcaId: "",
-        lineaId: "",
-        rubroId:"",
-        subrubroId: "",
-        precioId: "",
         imgUrl: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1758140654/cilindros-hidraulicos_ixwbrq.png',
         state: true,
-        linea: cilindros
+        linea: cilindros,
+        marca: moroAlberto,
+        rubro: cilindrosStd
     },
 
 ];
@@ -116,7 +130,7 @@ export const seedProduct = async (dataSource: DataSource) => {
         }
     }
 
-    
+    console.log('✅ Seed de productos completado exitosamente.');
     } catch (error) {
     console.error('❌ Error al ejecutar el seed de productos:');
         console.error('Mensaje:', error.message);

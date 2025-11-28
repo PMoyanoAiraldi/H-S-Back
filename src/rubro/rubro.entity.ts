@@ -12,11 +12,14 @@ export class Rubro {
      * Código único del cliente (del CSV)
      * @example '1'
      */
-    @Column({ type: 'int', nullable: false, unique: true })
+    @Column({ type: 'int', nullable: false })
     codigo: number;
 
     @Column({ unique: true })
     nombre: string; // Del CSV "Rubros" - Columna "Nombre"
+
+    @Column({ default: true }) 
+    state: boolean;
 
     @OneToMany(() => SubRubro, (subRubro) => subRubro.rubro)
     subRubros: SubRubro[];

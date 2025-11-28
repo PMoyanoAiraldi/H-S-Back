@@ -10,12 +10,12 @@ import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
 import { OrderProductModule } from './orderProduct/orderProduct.module';
 import { AuthModule } from './auth/auth.module';
-// import { SeedModule } from './seeds/seeds.module';
 import { LineaModule } from './linea/linea.module';
 import { MarcaModule } from './marca/marca.module';
 import { RubroModule } from './rubro/rubro.module';
 import { SubRubroModule } from './subRubro/subRubro.module';
 import { PrecioModule } from './precio/precio.module';
+import { SeedModule } from './seeds/seeds.module';
 
 @Module({
   imports: [
@@ -41,7 +41,7 @@ import { PrecioModule } from './precio/precio.module';
     RubroModule,
     SubRubroModule,
     PrecioModule,
-    // SeedModule
+    SeedModule
   
   ],
 controllers: [AppController],

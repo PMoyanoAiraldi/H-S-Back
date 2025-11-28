@@ -28,11 +28,8 @@ export class Linea {
     @Column({ default: 'default-image-url.jpg', nullable: true })
     imgUrl?: string;
 
-    @Column({ default: true }) // Por defecto, el producto estará activo
+    @Column({ default: true }) 
     state: boolean;
-
-    @ManyToOne(() => Marca)
-    marca: Marca; // Del CSV "Lineas" - Columna "Marca"
 
     @OneToMany(() => Products, (product) => product.linea)
     productos: Products[];

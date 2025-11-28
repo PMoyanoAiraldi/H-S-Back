@@ -83,7 +83,7 @@ export class ProductService {
                 marca: { id: createProductDto.marcaId }, 
                 linea: createProductDto.lineaId ? { id: createProductDto.lineaId } : undefined, 
                 rubro: { id: createProductDto.rubroId }, 
-                subRubro: createProductDto.subrubroId ? { id: createProductDto.subrubroId } : undefined, 
+                //subRubro: createProductDto.subrubroId ? { id: createProductDto.subrubroId } : undefined, 
                 imgUrl: imageUrl || createProductDto.imgUrl || 'default-image-url.jpg',
                 precios: precio ? [precio] : [] // Asociar el precio si existe
             });

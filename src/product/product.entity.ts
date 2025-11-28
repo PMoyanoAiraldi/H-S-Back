@@ -57,8 +57,8 @@ export class Products {
     @ManyToOne(() => Rubro, (rubro) => rubro.productos)
     rubro: Rubro; // Del CSV "Articulos" - Columna "Rubro"
 
-    @ManyToOne(() => SubRubro, (subRubro) => subRubro.productos, { nullable: true })
-    subRubro?: SubRubro; // Del CSV "Articulos" - Columna "SubRubro"
+    // @ManyToOne(() => SubRubro, (subRubro) => subRubro.productos, { nullable: true })
+    // subRubro?: SubRubro; // Del CSV "Articulos" - Columna "SubRubro"
 
 
     /**

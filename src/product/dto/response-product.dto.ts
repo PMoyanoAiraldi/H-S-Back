@@ -87,7 +87,7 @@ export class ResponseProductDto {
         dto.marcaNombre = product.marca?.nombre || '';
         dto.lineaNombre = product.linea?.nombre || '';
         dto.rubroNombre = product.rubro?.nombre || '';
-        dto.subRubroNombre = product.subRubro?.nombre || '';
+        //dto.subRubroNombre = product.subRubro?.nombre || '';
 
         // Mapear precios si existen
         dto.precios = product.precios?.map(precio => ({

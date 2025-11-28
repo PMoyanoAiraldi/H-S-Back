@@ -21,6 +21,7 @@ export class SubRubro {
     @ManyToOne(() => Rubro, (rubro) => rubro.subRubros)
     rubro: Rubro;
 
-    @OneToMany(() => Products, (product) => product.subRubro)
-    productos: Products[];
+    //! VER SI SE VA A USAR LA ENTIDA SUBRUBRO, COMENTE PRODUCTS PARA QUE NO DE ERROR
+    // @OneToMany(() => Products, (product) => product.subRubro)
+    // productos: Products[]; 
 }
