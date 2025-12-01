@@ -123,7 +123,7 @@ export class ProductService {
     const products = await this.productsRepository.find({
         take: limit,
         skip: (page - 1) * limit,
-        relations: ['linea']
+        relations: ['linea', 'marca', 'rubro']
     });
 
     return products.map(product => ResponseProductDto.fromEntity(product));

@@ -19,12 +19,6 @@ export class Linea {
     @Column({ unique: true })
     nombre: string; // Del CSV "Lineas" - Columna "Nombre"
 
-    // @ManyToOne(() => Rubro, (rubro) => rubro.linea)
-    // rubro: Rubro;
-
-    // @ManyToOne(() => SubRubro, (subRubro) => subRubro.linea)
-    // subRubro: SubRubro;
-
     @Column({ default: 'default-image-url.jpg', nullable: true })
     imgUrl?: string;
 

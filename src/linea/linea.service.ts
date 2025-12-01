@@ -60,7 +60,7 @@ export class LineaService {
         if (error instanceof QueryFailedError && error.driverError?.code === '23505') {
             // Error de unicidad detectado (código específico de PostgreSQL)
             throw new HttpException(
-                'Ya existe una categoría con ese nombre.',
+                'Ya existe una línea con ese nombre.',
                 HttpStatus.BAD_REQUEST,
             );
         }
@@ -118,7 +118,7 @@ export class LineaService {
                 }
     
                 // Asignar el nombre normalizado
-                linea.nombre = UpdateLineaDto.name.trim();
+                linea.nombre = updateLineaDto.nombre.trim();
             }
             
     
