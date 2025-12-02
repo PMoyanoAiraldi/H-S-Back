@@ -21,8 +21,8 @@ export class Rubro {
     @Column({ default: true }) 
     state: boolean;
 
-    @OneToMany(() => SubRubro, (subRubro) => subRubro.rubro)
-    subRubros: SubRubro[];
+    // @OneToMany(() => SubRubro, (subRubro) => subRubro.rubro)
+    // subRubros: SubRubro[];
 
     @OneToMany(() => Products, (product) => product.rubro)
     productos: Products[];
