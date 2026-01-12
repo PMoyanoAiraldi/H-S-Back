@@ -12,11 +12,12 @@ export class SeedModule implements OnModuleInit {
 
     async onModuleInit() {
 
+        await seedUsers(this.dataSource); 
         await seedLinea(this.dataSource);
         await seedMarca(this.dataSource);
         await seedRubro(this.dataSource);
         await seedProduct(this.dataSource)
-        // await seedUsers(this.dataSource); 
+        
         
     }
 }

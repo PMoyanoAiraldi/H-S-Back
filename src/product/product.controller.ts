@@ -67,17 +67,17 @@ export class ProductsController {
         return this.productsService.getProductsClients(page, limit);
     }
 
-    @Get()
-    @ApiOperation({ summary: 'Obtener todos los productos' })
-    @ApiResponse({ status: 200, description: 'Productos obtenidos', type: [ResponseProductDto] })
-    @ApiQuery({ name: 'page', required: false, description: 'Número de página', example: 1 })
-    @ApiQuery({ name: 'limit', required: false, description: 'Cantidad de resultados por página', example: 5 })
-    async getProducts(
-        @Query('page') page: number = 1,
-        @Query('limit') limit: number = 10,
-    ) {
-        return this.productsService.getProducts(page, limit);
-    }
+    // @Get()
+    // @ApiOperation({ summary: 'Obtener todos los productos' })
+    // @ApiResponse({ status: 200, description: 'Productos obtenidos', type: [ResponseProductDto] })
+    // @ApiQuery({ name: 'page', required: false, description: 'Número de página', example: 1 })
+    // @ApiQuery({ name: 'limit', required: false, description: 'Cantidad de resultados por página', example: 5 })
+    // async getProducts(
+    //     @Query('page') page: number = 1,
+    //     @Query('limit') limit: number = 10,
+    // ) {
+    //     return this.productsService.getProducts(page, limit);
+    // }
 
     @Get()
     async findAll(

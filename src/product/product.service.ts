@@ -133,7 +133,7 @@ export class ProductService {
     async findOne(productId: string): Promise<ResponseProductDto> {
         const product = await this.productsRepository.findOne({
             where: { id: productId },
-            relations: ['linea'],
+            relations: ['linea', 'marca', 'rubro'],
         });
 
         console.log('Resultado de la consulta:', product);
@@ -237,7 +237,7 @@ export class ProductService {
         // Cargar todas las relaciones para el response
         const productWithRelations = await this.productsRepository.findOne({
             where: { id: updatedProduct.id },
-            relations: ['marca', 'linea', 'rubro', 'subRubro', 'precios']
+            relations: ['marca', 'linea', 'rubro', 'precios']
         });
 
         return ResponseProductDto.fromEntity(productWithRelations);
@@ -259,7 +259,7 @@ private async updateRelations(product: Products, updateDto: UpdateProductDto): P
                 updateDto.lineaId,
             );
             if (!linea) {
-                throw new NotFoundException(`Categoría con ID ${updateDto.lineaId} no encontrada`);
+                throw new NotFoundException(`Linea con ID ${updateDto.lineaId} no encontrada`);
             }
             product.linea = linea;
         }
@@ -321,7 +321,23 @@ async findAllFiltered(filters: {
         .leftJoinAndSelect('product.linea', 'linea')
         .leftJoinAndSelect('product.rubro', 'rubro')
         .leftJoinAndSelect('product.marca', 'marca')
-        .where('product.state = :state', { state: true });
+        .where('product.state = :state', { state: true })
+        .select([
+            'product.id',
+            'product.nombre',
+            'product.descripcion',
+            'product.codigo',
+            'product.codigoAlternativo1',
+            'product.codigoAlternativo2',
+            'product.imgUrl',
+            'product.state',
+            'linea.id',
+            'linea.nombre',
+            'rubro.id',
+            'rubro.nombre',
+            'marca.id',
+            'marca.nombre'
+        ]);
 
     // Filtrar por línea
     if (filters.linea) {

@@ -23,8 +23,8 @@ export class User {
      * Código único del cliente (del CSV)
      * @example '1'
      */
-    @Column({ type: 'int', nullable: false, unique: true })
-    codigo: number;
+    // @Column({ type: 'int', nullable: false, unique: true })
+    // codigo: number;
 
     /**
      * Nombre del cliente
@@ -40,17 +40,17 @@ export class User {
     @Column({ nullable: false})
     password: string;
 
-    @Column({ nullable: true })
-    email?: string; // Del CSV "Clientes" - Columna "Email"
+    // @Column({ nullable: true })
+    // email?: string; // Del CSV "Clientes" - Columna "Email"
 
-    @Column({ nullable: true })
-    telefono?: string; // Del CSV "Clientes" - Columna "Telefono"
+    // @Column({ nullable: true })
+    // telefono?: string; // Del CSV "Clientes" - Columna "Telefono"
 
-    @Column('decimal', { precision: 5, scale: 2, default: 0 })
-    descuento: number; // Del CSV "Descuento1"
+    // @Column('decimal', { precision: 5, scale: 2, default: 0 })
+    // descuento: number; // Del CSV "Descuento1"
 
-    @Column({ default: 'lista_general' })
-    listaPrecio: string; // Del CSV "ListasDePrecio"
+    // @Column({ default: 'lista_general' })
+    // listaPrecio: string; // Del CSV "ListasDePrecio"
 
     @Column({
         type: 'enum',
