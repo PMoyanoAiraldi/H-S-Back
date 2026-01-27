@@ -30,10 +30,8 @@ export class AuthController {
         },
 })
     async signIn(@Body() credentials: LoginUserDto) {
-        const user = await  this.authService.login(credentials)
-        return {
-            user, 
-        };
+        return  await  this.authService.login(credentials)
+        
     }
 
     @UseGuards(AuthGuard)
