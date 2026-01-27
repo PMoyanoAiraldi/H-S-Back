@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Patch, Post, Req, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Patch, Post, Req, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { LoginUserDto } from "./dto/login-user.dto";
@@ -56,6 +56,14 @@ export class AuthController {
     const { oldPassword, newPassword } = body;
     return this.authService.changePassword(req.user.id, oldPassword, newPassword);
 }
+
+    @UseGuards(AuthGuard)
+    @Get('profile')
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Obtener usuario logueado a partir del token' })
+    getProfile(@Req() req) {
+    return req.user;
+    }
 
 
 }
