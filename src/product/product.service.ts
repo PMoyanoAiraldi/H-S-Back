@@ -263,49 +263,6 @@ private async updateRelations(product: Products, updateDto: UpdateProductDto): P
             }
             product.linea = linea;
         }
-
-        // if (updateDto.marcaId) {
-        //     const marca = await this.marcaService.findOne(
-        //         updateDto.marcaId,
-        //     );
-        //     if (!marca) {
-        //         throw new NotFoundException(`Categoría con ID ${updateDto.marcaId} no encontrada`);
-        //     }
-        //     product.marca = marca;
-        // }
-
-    //     if (updateDto.rubroId) {
-    //     const rubro = await this.rubroService.findOne(updateDto.rubroId);
-    //     if (!rubro) {
-    //         throw new NotFoundException(`Rubro con ID ${updateDto.rubroId} no encontrado`);
-    //     }
-    //     product.rubro = rubro;
-    // }
-
-    // // Actualizar SubRubro
-    // if (updateDto.subrubroId) {
-    //     const subRubro = await this.subrubroService.findOne(updateDto.subrubroId);
-    //     if (!subRubro) {
-    //         throw new NotFoundException(`SubRubro con ID ${updateDto.subrubroId} no encontrado`);
-    //     }
-    //     product.subRubro = subRubro;
-    // }
-
-    // // Actualizar Precio
-    // if (updateDto.precioId) {
-    //     const precio = await this.precioRepository.findOne({
-    //         where: { id: updateDto.precioId }
-    //     });
-    //     if (!precio) {
-    //         throw new NotFoundException(`Precio con ID ${updateDto.precioId} no encontrado`);
-    //     }
-    //     // Si el precio ya está asociado, no hacer nada
-    //     // Si no, agregarlo al array
-    //     const precioExiste = product.precios?.some(p => p.id === precio.id);
-    //     if (!precioExiste) {
-    //         product.precios = product.precios ? [...product.precios, precio] : [precio];
-    //     }
-    // }
 }
 
 async findAllFiltered(filters: {
@@ -375,4 +332,164 @@ async findAllFiltered(filters: {
         lastPage: Math.ceil(total / filters.limit)
     };
 }
+
+// Método para usuarios NO autenticados (sin precios)
+async findAllFilteredPublic(filters: {
+    linea?: string;
+    rubro?: string;
+    marca?: string;
+    search?: string;
+    page: number;
+    limit: number;
+}) {
+    const query = this.productsRepository
+        .createQueryBuilder('product')
+        .leftJoinAndSelect('product.linea', 'linea')
+        .leftJoinAndSelect('product.rubro', 'rubro')
+        .leftJoinAndSelect('product.marca', 'marca')
+        .where('product.state = :state', { state: true })
+        .select([
+            'product.id',
+            'product.nombre',
+            'product.descripcion',
+            'product.codigo',
+            'product.codigoAlternativo1',
+            'product.codigoAlternativo2',
+            'product.imgUrl',
+            'product.state',
+            'linea.id',
+            'linea.nombre',
+            'rubro.id',
+            'rubro.nombre',
+            'marca.id',
+            'marca.nombre'
+            // NO incluimos 'precios' aquí
+        ]);
+
+    // Aplicar filtros
+    if (filters.linea) {
+        query.andWhere('linea.nombre = :linea', { linea: filters.linea });
+    }
+    if (filters.rubro) {
+        query.andWhere('rubro.nombre = :rubro', { rubro: filters.rubro });
+    }
+    if (filters.marca) {
+        query.andWhere('marca.nombre = :marca', { marca: filters.marca });
+    }
+    if (filters.search) {
+        query.andWhere(
+            '(product.nombre ILIKE :search OR product.descripcion ILIKE :search OR CAST(product.codigo AS TEXT) LIKE :search)',
+            { search: `%${filters.search}%` }
+        );
+    }
+
+    const skip = (filters.page - 1) * filters.limit;
+    query.skip(skip).take(filters.limit);
+
+    const [products, total] = await query.getManyAndCount();
+
+    return {
+        data: products,
+        total,
+        page: filters.page,
+        lastPage: Math.ceil(total / filters.limit)
+    };
+}
+
+// Método para usuarios AUTENTICADOS (con precios)
+async findAllFilteredWithPrices(filters: {
+    linea?: string;
+    rubro?: string;
+    marca?: string;
+    search?: string;
+    page: number;
+    limit: number;
+}) {
+    const query = this.productsRepository
+        .createQueryBuilder('product')
+        .leftJoinAndSelect('product.linea', 'linea')
+        .leftJoinAndSelect('product.rubro', 'rubro')
+        .leftJoinAndSelect('product.marca', 'marca')
+        .leftJoinAndSelect('product.precios', 'precios') //  INCLUIR PRECIOS
+        .where('product.state = :state', { state: true })
+        .select([
+            'product.id',
+            'product.nombre',
+            'product.descripcion',
+            'product.codigo',
+            'product.codigoAlternativo1',
+            'product.codigoAlternativo2',
+            'product.imgUrl',
+            'product.state',
+            'linea.id',
+            'linea.nombre',
+            'rubro.id',
+            'rubro.nombre',
+            'marca.id',
+            'marca.nombre',
+            'precios.id',           //  INCLUIR INFO DE PRECIOS
+            'precios.listaPrecio',
+            'precios.precio',
+            'precios.updatedAt'
+        ]);
+
+    // Aplicar mismos filtros
+    if (filters.linea) {
+        query.andWhere('linea.nombre = :linea', { linea: filters.linea });
+    }
+    if (filters.rubro) {
+        query.andWhere('rubro.nombre = :rubro', { rubro: filters.rubro });
+    }
+    if (filters.marca) {
+        query.andWhere('marca.nombre = :marca', { marca: filters.marca });
+    }
+    if (filters.search) {
+        query.andWhere(
+            '(product.nombre ILIKE :search OR product.descripcion ILIKE :search OR CAST(product.codigo AS TEXT) LIKE :search)',
+            { search: `%${filters.search}%` }
+        );
+    }
+
+    const skip = (filters.page - 1) * filters.limit;
+    query.skip(skip).take(filters.limit);
+
+    const [products, total] = await query.getManyAndCount();
+
+    return {
+        data: products,
+        total,
+        page: filters.page,
+        lastPage: Math.ceil(total / filters.limit)
+    };
+}
+
+// Método para obtener UN producto sin precios (público)
+async findOnePublic(productId: string): Promise<ResponseProductDto> {
+    const product = await this.productsRepository.findOne({
+        where: { id: productId },
+        relations: ['linea', 'marca', 'rubro'],
+        // NO incluir 'precios'
+    });
+
+    if (!product) {
+        throw new NotFoundException(`Producto con ID ${productId} no encontrado`);
+    }
+
+    return ResponseProductDto.fromEntity(product);
+}
+
+// Método para obtener UN producto con precios (autenticado)
+async findOneWithPrices(productId: string): Promise<ResponseProductDto> {
+    const product = await this.productsRepository.findOne({
+        where: { id: productId },
+        relations: ['linea', 'marca', 'rubro', 'precios'], //aca agregamos precios
+    });
+
+    if (!product) {
+        throw new NotFoundException(`Producto con ID ${productId} no encontrado`);
+    }
+
+    return ResponseProductDto.fromEntity(product);
+}
+
 }

@@ -168,4 +168,88 @@ export class ProductsController {
         }
     }
 
+    @Get('public')
+    @ApiOperation({ summary: 'Obtener productos sin precios (público)' })
+    @ApiResponse({ status: 200, description: 'Productos obtenidos sin información de precios' })
+    @ApiQuery({ name: 'linea', required: false })
+    @ApiQuery({ name: 'rubro', required: false })
+    @ApiQuery({ name: 'marca', required: false })
+    @ApiQuery({ name: 'search', required: false })
+    @ApiQuery({ name: 'page', required: false, example: 1 })
+    @ApiQuery({ name: 'limit', required: false, example: 50 })
+    async findAllPublic(
+        @Query('linea') linea?: string,
+        @Query('rubro') rubro?: string,
+        @Query('marca') marca?: string,
+        @Query('search') search?: string,
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 50
+    ) {
+        return this.productsService.findAllFilteredPublic({
+            linea,
+            rubro,
+            marca,
+            search,
+            page,
+            limit
+        });
+    }
+
+    @Get('public/:id')
+    @ApiOperation({ summary: 'Obtener producto por ID sin precios (público)' })
+    @ApiResponse({ status: 200, description: 'Producto obtenido sin precios' })
+    @ApiResponse({ status: 404, description: 'Producto no encontrado' })
+    async findOnePublic(@Param('id', new ParseUUIDPipe()) id: string) {
+        const product = await this.productsService.findOnePublic(id);
+        if (!product) {
+            throw new NotFoundException("Producto no encontrado");
+        }
+        return product;
+    }
+
+    @Get()
+    @ApiOperation({ summary: 'Obtener productos con precios (requiere autenticación)' })
+    @ApiResponse({ status: 200, description: 'Productos obtenidos con precios' })
+    @ApiQuery({ name: 'linea', required: false })
+    @ApiQuery({ name: 'rubro', required: false })
+    @ApiQuery({ name: 'marca', required: false })
+    @ApiQuery({ name: 'search', required: false })
+    @ApiQuery({ name: 'page', required: false, example: 1 })
+    @ApiQuery({ name: 'limit', required: false, example: 50 })
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('admin', 'cliente')
+    @ApiSecurity('bearer')
+    async findAllWithPrices(
+        @Query('linea') linea?: string,
+        @Query('rubro') rubro?: string,
+        @Query('marca') marca?: string,
+        @Query('search') search?: string,
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 50
+    ) {
+        return this.productsService.findAllFilteredWithPrices({
+            linea,
+            rubro,
+            marca,
+            search,
+            page,
+            limit
+        });
+    }
+
+    @Get(':id')
+    @ApiOperation({ summary: 'Obtener producto por ID con precios (requiere autenticación)' })
+    @ApiResponse({ status: 200, description: 'Producto obtenido con precios' })
+    @ApiResponse({ status: 404, description: 'Producto no encontrado' })
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('admin', 'cliente')
+    @ApiSecurity('bearer')
+    async findOneWithPrices(@Param('id', new ParseUUIDPipe()) id: string) {
+        const product = await this.productsService.findOneWithPrices(id);
+        if (!product) {
+            throw new NotFoundException("Producto no encontrado");
+        }
+        return product;
+    }
+
 }
