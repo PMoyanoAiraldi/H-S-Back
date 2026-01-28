@@ -5,6 +5,7 @@ import { seedProduct } from './product.seed';
 import { seedLinea } from './linea.seed';
 import { seedRubro } from './rubro.seed';
 import { seedMarca } from './marca.seed';
+import { seedPrecio } from './precio.seed';
 
 @Module({})
 export class SeedModule implements OnModuleInit {
@@ -16,7 +17,8 @@ export class SeedModule implements OnModuleInit {
         await seedLinea(this.dataSource);
         await seedMarca(this.dataSource);
         await seedRubro(this.dataSource);
-        await seedProduct(this.dataSource)
+        await seedProduct(this.dataSource);
+        await seedPrecio(this.dataSource)
         
         
     }
