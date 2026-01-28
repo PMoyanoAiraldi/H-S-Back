@@ -43,6 +43,10 @@ export class UserService {
         }
     }
 
+        async findAll(): Promise<User[]> {
+            return await this.usersRepository.find();
+        }
+
         async getUserForId(id: string): Promise<User | undefined>{
             return this.usersRepository.findOne({ where: {id}})
         }
@@ -94,7 +98,17 @@ export class UserService {
             return await this.usersRepository.save(user);
         }
 
-        
+    async updateUserState(id: string, state: boolean): Promise<User> {
+    const user = await this.usersRepository.findOne({ where: { id } });
+    
+    if (!user) {
+        throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+    }
+    
+    user.state = state;
+    return await this.usersRepository.save(user);
+}
+
         }
 
     

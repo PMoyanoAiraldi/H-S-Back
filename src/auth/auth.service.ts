@@ -39,6 +39,9 @@ export class AuthService {
             throw new HttpException('Nombre o contraseña incorrecto', HttpStatus.UNAUTHORIZED);
         }
 
+        user.lastLogin = new Date();
+        await this.usersRepository.save(user);
+
         const token = await this.createToken(user);
         const { password, ...userWithoutPassword } = user;// Elimina campos sensibles como password
 
