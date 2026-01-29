@@ -1,4 +1,4 @@
-import { Body, Controller,Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller,Get, Param, Patch, Post, Put, UseGuards } from "@nestjs/common";
 import { RubroService } from "./rubro.service";
 import { ApiBody, ApiOperation, ApiResponse, ApiSecurity, ApiTags } from "@nestjs/swagger";
 import { ResponseRubroSimpleDto } from "./dto/response-rubro-simple.dto";
@@ -41,22 +41,14 @@ export class RubroController {
             return nuevoRubro;
     }
         
-    @Get()
-    @ApiOperation({ summary: 'Listar todos los rubros' })
-    @ApiResponse({ status: 200, description: 'Lista de rubros', type: [Rubro] })
-    // @UseGuards(AuthGuard, RolesGuard)
-    // @Roles('admin')
+    @Get('admin/all')
+    @ApiOperation({ summary: 'Obtener TODOS los rubros (activos e inactivos) - Solo Admin' })
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('admin')
     @ApiSecurity('bearer')
-    async findAll(): Promise<Rubro[]> {
-        return this.rubroService.findAllRubro();
+    async findAllForAdmin(): Promise<Rubro[]> {
+        return this.rubroService.findAllRubro(); // Todas (activas e inactivas)
     }
-        
-        // @Get('actives')
-        // @ApiOperation({ summary: 'Listar todas las categorías activas' })
-        // @ApiResponse({ status: 200, description: 'Lista de categorías activas', type: [Category] })
-        // async findAllActivas(): Promise<Category[]> {
-        //     return this.categoryService.obtenerCategoriasActivas();
-        // }
         
     @Get(':id/actives')
     @ApiOperation({ summary: 'Obtener un rubro activo por ID' })
@@ -104,6 +96,20 @@ export class RubroController {
     })
     async update(@Param('id') id: string, @Body() updateRubroDto: UpdateRubroDto): Promise<Rubro> {
         return this.rubroService.update(id, updateRubroDto);
+    }
+
+
+    @Patch(':id/state')
+    @ApiOperation({ summary: 'Cambiar estado de rubro (activar/desactivar) - Solo Admin' })
+    @ApiResponse({ status: 200, description: 'Estado actualizado correctamente' })
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('admin')
+    @ApiSecurity('bearer')
+    async updateState(
+        @Param('id') id: string,
+        @Body() updateStateDto: { state: boolean }
+    ) {
+        return this.rubroService.updateState(id, updateStateDto.state);
     }
     
 }

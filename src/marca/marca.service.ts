@@ -53,9 +53,18 @@ export class MarcaService {
             throw error;
         }
             }
-
+    
+            // Obtener todas para admin
     async findAll(): Promise<Marca[]> {
         return await this.marcaRepository.find();
+    }
+
+    // Obtener solo activas (para público)
+    async findAllActive(): Promise<Marca[]> {
+        return this.marcaRepository.find({
+            where: { state: true },
+            order: { nombre: 'ASC' }
+        });
     }
         
     async findOne(id: string): Promise<Marca> {
@@ -73,6 +82,12 @@ export class MarcaService {
             }
                 return marca;
             }
+
+    async updateState(id: string, state: boolean): Promise<Marca> {
+        const marca = await this.findOne(id);
+        marca.state = state;
+        return this.marcaRepository.save(marca);
+    }        
     
     async update(id: string, updateMarcaDto: UpdateMarcaDto): Promise<Marca> {
         const marca = await this.marcaRepository.findOne({ where: { id } });

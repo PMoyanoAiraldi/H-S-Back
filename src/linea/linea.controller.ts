@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Put, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { LineaService } from "./linea.service";
 import { FileUploadService } from "src/file-upload/file-upload.service";
 import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiSecurity, ApiTags } from "@nestjs/swagger";
@@ -56,12 +56,14 @@ export class LineaController {
         return this.lineaService.findAll();
     }
 
-    // @Get('actives')
-    // @ApiOperation({ summary: 'Listar todas las categorías activas' })
-    // @ApiResponse({ status: 200, description: 'Lista de categorías activas', type: [Category] })
-    // async findAllActivas(): Promise<Category[]> {
-    //     return this.categoryService.obtenerCategoriasActivas();
-    // }
+    @Get('admin/all')
+    @ApiOperation({ summary: 'Obtener TODAS las líneas (activas e inactivas) - Solo Admin' })
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('admin')
+    @ApiSecurity('bearer')
+    async findAllForAdmin() {
+        return this.lineaService.findAll(); // Todas (activas e inactivas)
+    }
 
     @Get(':id/actives')
     @ApiOperation({ summary: 'Obtener una linea activa por ID' })
@@ -97,26 +99,35 @@ export class LineaController {
     @UseGuards(AuthGuard, RolesGuard)
     @Roles('admin')
     @ApiSecurity('bearer')
-    @ApiConsumes('multipart/form-data')
     @ApiBody({
-        description: 'Datos para actualizar la linea, incluyendo la opción de subir una imagen',
+        description: 'Datos para actualizar la linea',
         schema: {
             type: 'object',
             properties: {
-                image: { type: 'string', format: 'binary'},
                 nombre: { type: 'string' },
                 codigo: {type: 'number'}
             }
         }
     })
-    @UseInterceptors(FileInterceptor('image'))
     async update(
         @Param('id') id: string, 
         @Body() updateLineaDto: UpdateLineaDto,
-        @UploadedFile() file?: Express.Multer.File
     ): Promise<Linea> {
         
-        return this.lineaService.update(id, updateLineaDto, file);
+        return this.lineaService.update(id, updateLineaDto);
+    }
+
+    @Patch(':id/state')
+    @ApiOperation({ summary: 'Cambiar estado de línea (activar/desactivar) - Solo Admin' })
+    @ApiResponse({ status: 200, description: 'Estado actualizado correctamente' })
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('admin')
+    @ApiSecurity('bearer')
+    async updateState(
+        @Param('id') id: string,
+        @Body() updateStateDto: { state: boolean }
+    ) {
+        return this.lineaService.updateState(id, updateStateDto.state);
     }
 
 

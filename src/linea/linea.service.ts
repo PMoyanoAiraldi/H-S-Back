@@ -70,7 +70,7 @@ export class LineaService {
         }
 
         async findAll(): Promise<Linea[]> {
-            return await this.lineaRepository.find();
+            return await this.lineaRepository.find( {order: { nombre: 'ASC' }});
         }
 
         async findOne(id: string): Promise<Linea> {
@@ -89,7 +89,7 @@ export class LineaService {
             return linea;
         }
 
-        async update(id: string, updateLineaDto: UpdateLineaDto, file?: Express.Multer.File): Promise<Linea> {
+        async update(id: string, updateLineaDto: UpdateLineaDto): Promise<Linea> {
         
             const linea = await this.lineaRepository.findOne({ where: { id } });
             if (!linea) {
@@ -97,7 +97,7 @@ export class LineaService {
             } 
     
             // Si no se proporciona ningún dato válido, lanzar un error
-            if (!updateLineaDto.nombre && !file) {
+            if (!updateLineaDto.nombre) {
                 throw new BadRequestException('No se proporcionaron datos para actualizar la linea.');
             }
             
@@ -120,34 +120,6 @@ export class LineaService {
                 // Asignar el nombre normalizado
                 linea.nombre = updateLineaDto.nombre.trim();
             }
-            
-    
-                if (file) {
-                        // Eliminar la imagen anterior si existe
-                        console.log('Archivo recibido en el servicio:', file);
-                        if (linea.imgUrl) {
-                            try {
-                            await this.cloudinaryService.deleteFile(linea.imgUrl);
-                        } catch (error) {
-                        console.error('Error al manejar la imagen:', error);
-                        throw new InternalServerErrorException('Error al manejar la imagen');
-                    }
-                }
-    
-                    try{
-                        // Subir la nueva imagen
-                        const newImageUrl = await this.cloudinaryService.uploadFile(
-                            file.buffer,
-                            'category',
-                            file.originalname,
-                        );
-                        linea.imgUrl = newImageUrl; // Asignar la nueva URL de la imagen
-                    } catch (error) {
-                        console.error('Error al subir la nueva imagen:', error);
-                        throw new InternalServerErrorException('Error al subir la nueva imagen');
-                    }
-                }
-    
             try {
                 return await this.lineaRepository.save(linea);
             } catch (error) {
@@ -176,6 +148,12 @@ export class LineaService {
             rubroNombre: product.rubro?.nombre,
             //subRubroNombre: product.subRubro?.nombre,
         };
+    }
+
+    async updateState(id: string, state: boolean): Promise<Linea> {
+        const linea = await this.findOne(id);
+        linea.state = state;
+        return this.lineaRepository.save(linea);
     }
 
     async findProductByLinea(lineaId: string): Promise <ResponseLineaDto> {

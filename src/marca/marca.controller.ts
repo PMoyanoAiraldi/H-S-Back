@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, UseGuards, Param, Put } from "@nestjs/common";
+import { Body, Controller, Post, Get, UseGuards, Param, Put, Patch } from "@nestjs/common";
 import { MarcaService } from "./marca.service";
 import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiSecurity, ApiTags } from "@nestjs/swagger";
 import { ResponseMarcaDto } from "./dto/response-marca.dto";
@@ -22,8 +22,6 @@ export class MarcaController {
     @ApiOperation({ summary: 'Crear una nueva marca' })
     @ApiResponse({ status: 201, description: 'Marca creada', type: ResponseMarcaSimpleDto })
     @ApiResponse({ status: 400, description: 'La marca ya existe.' })
-    @UseGuards(AuthGuard, RolesGuard)
-    @Roles('admin')
     @ApiSecurity('bearer')
     @ApiBody({
             description: 'Datos para crear la marca',
@@ -41,21 +39,22 @@ export class MarcaController {
         }
     
     @Get()
-    @ApiOperation({ summary: 'Listar todas las marcas' })
+    @ApiOperation({ summary: 'Obtener todas las marcas activas' })
+    async findAll() {
+        return this.marcaService.findAllActive(); // Solo activas
+    }
+
+
+    @Get('admin/all')
+    @ApiOperation({ summary: 'Listar todas las marcas (activas e inactivas)' })
     @ApiResponse({ status: 200, description: 'Lista de marcas', type: [Marca] })
-    // @UseGuards(AuthGuard, RolesGuard)
-    // @Roles('admin')
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('admin')
     @ApiSecurity('bearer')
-    async findAll(): Promise<Marca[]> {
+    async findAllForAdmin(): Promise<Marca[]> {
         return this.marcaService.findAll();
     }
     
-    // @Get('actives')
-    // @ApiOperation({ summary: 'Listar todas las categorías activas' })
-    // @ApiResponse({ status: 200, description: 'Lista de categorías activas', type: [Category] })
-    // async findAllActivas(): Promise<Category[]> {
-    //     return this.categoryService.obtenerCategoriasActivas();
-    // }
     
     @Get(':id/actives')
     @ApiOperation({ summary: 'Obtener una marca activa por ID' })
@@ -69,8 +68,6 @@ export class MarcaController {
     @ApiOperation({ summary: 'Obtener una marca por ID' })
     @ApiResponse({ status: 200, description: 'Marca encontrada', type: Marca })
     @ApiResponse({ status: 404, description: 'Marca no encontrada' })
-    @UseGuards(AuthGuard, RolesGuard)
-    @Roles('admin')
     @ApiSecurity('bearer')
     async findOne(@Param('id') id: string): Promise<Marca> {
             return this.marcaService.findOne(id);
@@ -104,5 +101,21 @@ export class MarcaController {
     async update(@Param('id') id: string, @Body() updateMarcaDto: UpdateMarcaDto): Promise<Marca> {
         return this.marcaService.update(id, updateMarcaDto);
     }
+
+    @Patch(':id/state')
+    @ApiOperation({ summary: 'Cambiar estado de marca (activar/desactivar) - Solo Admin' })
+    @ApiResponse({ status: 200, description: 'Estado actualizado correctamente' })
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('admin')
+    @ApiSecurity('bearer')
+    async updateState(
+        @Param('id') id: string,
+        @Body() updateStateDto: { state: boolean }
+    ) {
+        return this.marcaService.updateState(id, updateStateDto.state);
+    }
+
+
+
 
 }

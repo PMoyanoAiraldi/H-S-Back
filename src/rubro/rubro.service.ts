@@ -48,16 +48,25 @@ export class RubroService {
             }
                 }
     async findAllRubro(): Promise<Rubro[]> {
-            return await this.rubroRepository.find();
-        }
+            return await this.rubroRepository.find({
+            order: { nombre: 'ASC' }
+        });
+    }
+
+    async findAllActive(): Promise<Rubro[]> {
+        return this.rubroRepository.find({
+            where: { state: true },
+            order: { nombre: 'ASC' }
+        });
+    }
             
     async findOneRubro(id: string): Promise<Rubro> {
-            const rubro = await this.rubroRepository.findOne({ where: { id } });
-                if (!rubro) {
-                    throw new NotFoundException(`Rubro con ID ${id} no encontrado`);
-            }
-                return rubro;
-            }
+        const rubro = await this.rubroRepository.findOne({ where: { id } });
+            if (!rubro) {
+                throw new NotFoundException(`Rubro con ID ${id} no encontrado`);
+        }
+            return rubro;
+    }
     
     async findOneActiveRubro(id: string): Promise<Rubro> {
             const rubro = await this.rubroRepository.findOne({ where: { id } });
@@ -124,6 +133,13 @@ async update(id: string, updateRubroDto: UpdateRubroDto): Promise<Rubro> {
                 //subRubroNombre: product.subRubro?.nombre,
             };
         }
+
+
+        async updateState(id: string, state: boolean): Promise<Rubro> {
+        const rubro = await this.rubroRepository.findOne({ where: { id } });
+        rubro.state = state;
+        return this.rubroRepository.save(rubro);
+    }
 
         async findProductByRubro(rubroId: string): Promise <ResponseRubroDto> {
                     const rubro = await this.rubroRepository.findOne({
