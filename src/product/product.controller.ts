@@ -33,12 +33,16 @@ export class ProductsController {
         schema: {
             type: 'object',
             properties: {
-                name: { type: 'string' },
-                description: { type: 'string' },
-                price: { type: 'number' },
-                stock: { type: 'number' },
-                categoryId: { type: 'string' },
-                file: { type: 'string', format: 'binary' },
+                nombre: { type: 'string' },
+                descripcion: { type: 'string' },
+                codigo: {type: 'number'},
+                codigoAlternativo1: {type: 'string'},
+                codigoAlternativo2: {type: 'string'},
+                marcaId: {type: 'string'},
+                lineaId: {type: 'string'},
+                rubroId: {type: 'string'},
+                precioId: {type: 'string'},
+                imgUrl: { type: 'string', format: 'binary' },
 
             },
         },
@@ -50,6 +54,33 @@ export class ProductsController {
         const newProduct = await this.productsService.createProduct(createProductDto, file);
 
         return newProduct;
+    }
+
+        @Get('public')
+    @ApiOperation({ summary: 'Obtener productos sin precios (público)' })
+    @ApiResponse({ status: 200, description: 'Productos obtenidos sin información de precios' })
+    @ApiQuery({ name: 'linea', required: false })
+    @ApiQuery({ name: 'rubro', required: false })
+    @ApiQuery({ name: 'marca', required: false })
+    @ApiQuery({ name: 'search', required: false })
+    @ApiQuery({ name: 'page', required: false, example: 1 })
+    @ApiQuery({ name: 'limit', required: false, example: 50 })
+    async findAllPublic(
+        @Query('linea') linea?: string,
+        @Query('rubro') rubro?: string,
+        @Query('marca') marca?: string,
+        @Query('search') search?: string,
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 50
+    ) {
+        return this.productsService.findAllFilteredPublic({
+            linea,
+            rubro,
+            marca,
+            search,
+            page,
+            limit
+        });
     }
 
     @Get('/clients')
@@ -67,36 +98,7 @@ export class ProductsController {
         return this.productsService.getProductsClients(page, limit);
     }
 
-    // @Get()
-    // @ApiOperation({ summary: 'Obtener todos los productos' })
-    // @ApiResponse({ status: 200, description: 'Productos obtenidos', type: [ResponseProductDto] })
-    // @ApiQuery({ name: 'page', required: false, description: 'Número de página', example: 1 })
-    // @ApiQuery({ name: 'limit', required: false, description: 'Cantidad de resultados por página', example: 5 })
-    // async getProducts(
-    //     @Query('page') page: number = 1,
-    //     @Query('limit') limit: number = 10,
-    // ) {
-    //     return this.productsService.getProducts(page, limit);
-    // }
 
-    @Get()
-    async findAll(
-    @Query('linea') linea?: string,
-    @Query('rubro') rubro?: string,
-    @Query('marca') marca?: string,
-    @Query('search') search?: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 50
-) {
-    return this.productsService.findAllFiltered({
-        linea,
-        rubro,
-        marca,
-        search,
-        page,
-        limit
-    });
-}
 
     @Get(':id')
     @ApiOperation({ summary: 'Obtener producto por ID' })
@@ -168,24 +170,28 @@ export class ProductsController {
         }
     }
 
-    @Get('public')
-    @ApiOperation({ summary: 'Obtener productos sin precios (público)' })
-    @ApiResponse({ status: 200, description: 'Productos obtenidos sin información de precios' })
+
+    @Get('admin/all')
+    @ApiOperation({ summary: 'Obtener TODOS los productos (activos e inactivos) - Solo Admin' })
+    @ApiResponse({ status: 200, description: 'Todos los productos obtenidos' })
     @ApiQuery({ name: 'linea', required: false })
     @ApiQuery({ name: 'rubro', required: false })
     @ApiQuery({ name: 'marca', required: false })
     @ApiQuery({ name: 'search', required: false })
     @ApiQuery({ name: 'page', required: false, example: 1 })
-    @ApiQuery({ name: 'limit', required: false, example: 50 })
-    async findAllPublic(
+    @ApiQuery({ name: 'limit', required: false, example: 1000 })
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles('admin') 
+    @ApiSecurity('bearer')
+    async findAllForAdmin(
         @Query('linea') linea?: string,
         @Query('rubro') rubro?: string,
         @Query('marca') marca?: string,
         @Query('search') search?: string,
         @Query('page') page: number = 1,
-        @Query('limit') limit: number = 50
+        @Query('limit') limit: number = 1000
     ) {
-        return this.productsService.findAllFilteredPublic({
+        return this.productsService.findAllForAdmin({
             linea,
             rubro,
             marca,
@@ -194,6 +200,7 @@ export class ProductsController {
             limit
         });
     }
+
 
     @Get('public/:id')
     @ApiOperation({ summary: 'Obtener producto por ID sin precios (público)' })

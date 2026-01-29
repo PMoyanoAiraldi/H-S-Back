@@ -67,16 +67,16 @@ export class CreateProductDto {
     })
     @IsUUID('4', { message: 'El ID del rubro debe ser un UUID válido.' })
     @IsNotEmpty()
-    rubroId: string;
+    rubroId?: string;
 
-    @ApiProperty({ 
-        description: "El ID del subrubro del producto", 
-        required: false,
-        example: "550e8400-e29b-41d4-a716-446655440003"
-    })
-    @IsUUID('4', { message: 'El ID del subrubro debe ser un UUID válido.' })
-    @IsOptional()
-    subrubroId?: string;
+    // @ApiProperty({ 
+    //     description: "El ID del subrubro del producto", 
+    //     required: false,
+    //     example: "550e8400-e29b-41d4-a716-446655440003"
+    // })
+    // @IsUUID('4', { message: 'El ID del subrubro debe ser un UUID válido.' })
+    // @IsOptional()
+    // subrubroId?: string;
 
     @ApiProperty({ 
         description: "El ID del precio del producto", 
