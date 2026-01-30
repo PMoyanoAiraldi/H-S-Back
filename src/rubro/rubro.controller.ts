@@ -40,6 +40,14 @@ export class RubroController {
         const nuevoRubro = await this.rubroService.createRubro(createRubroDto);
             return nuevoRubro;
     }
+
+
+    
+    @Get()
+    @ApiOperation({ summary: 'Obtener todos los rubros activos' })
+    async findAll() {
+        return this.rubroService.findAllActive(); // Solo activas
+    }
         
     @Get('admin/all')
     @ApiOperation({ summary: 'Obtener TODOS los rubros (activos e inactivos) - Solo Admin' })

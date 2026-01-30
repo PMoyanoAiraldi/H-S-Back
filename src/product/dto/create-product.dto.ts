@@ -15,19 +15,20 @@ export class CreateProductDto {
     descripcion: string;
 
     @ApiProperty({ description: "El código del producto" })
+    @Transform(({ value }) => value ? parseInt(value, 10) : undefined)
     @IsNumber()
     @IsOptional()
     codigo?: number;
     
     
     @ApiProperty({ description: "El código Alternativo1 del producto" })
-    @IsNumber()
+    @IsString()
     @IsOptional()
     codigoAlternativo1?: string; // Del CSV "Articulos" - Columna "CodigoAlternativo1"
     
     
     @ApiProperty({ description: "El Alternativo2 del producto" })
-    @IsNumber()
+    @IsString()
     @IsOptional()
     codigoAlternativo2?: string; 
 
@@ -66,7 +67,7 @@ export class CreateProductDto {
         example: "550e8400-e29b-41d4-a716-446655440002"
     })
     @IsUUID('4', { message: 'El ID del rubro debe ser un UUID válido.' })
-    @IsNotEmpty()
+    @IsOptional()
     rubroId?: string;
 
     // @ApiProperty({ 
@@ -79,13 +80,33 @@ export class CreateProductDto {
     // subrubroId?: string;
 
     @ApiProperty({ 
+        description: "El precio del producto", 
+        required: false,
+        example: 1000.50
+    })
+    @Transform(({ value }) => value ? parseFloat(value) : undefined)
+    @IsNumber()
+    @IsOptional()
+    precio?: number; //Solo para transportar datos
+
+    @ApiProperty({ 
+        description: "Lista de precio (número de lista)", 
+        required: false,
+        example: 1
+    })
+    @Transform(({ value }) => value ? parseInt(value, 10) : undefined)
+    @IsNumber()
+    @IsOptional()
+    listaPrecio?: number; //Solo para transportar datos
+
+    @ApiProperty({ 
         description: "El ID del precio del producto", 
         required: true,
         example: "550e8400-e29b-41d4-a716-446655440004"
     })
     @IsUUID('4', { message: 'El ID del precio debe ser un UUID válido.' })
-    @IsNotEmpty()
-    precioId: string;
+    @IsOptional()
+    precioId?: string;
 
 
     @ApiProperty({ 

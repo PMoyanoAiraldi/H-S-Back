@@ -10,10 +10,14 @@ import { CloudinaryService } from "src/file-upload/cloudinary.service";
 import { Linea } from "src/linea/linea.entity";
 import { LineaService } from "src/linea/linea.service";
 import { Precio } from "src/precio/precio.entity";
+import { MarcaService } from "src/marca/marca.service";
+import { RubroService } from "src/rubro/rubro.service";
+import { Marca } from "src/marca/marca.entity";
+import { Rubro } from "src/rubro/rubro.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([User, Products, OrderProduct, Order, Precio, Linea])],
-    providers: [ ProductService, LineaService, CloudinaryService],
+    imports: [TypeOrmModule.forFeature([User, Products, OrderProduct, Order, Precio, Linea, Marca, Rubro])],
+    providers: [ ProductService, MarcaService, RubroService, LineaService, CloudinaryService],
     controllers: [ProductsController],
     exports: [ProductService]
 })

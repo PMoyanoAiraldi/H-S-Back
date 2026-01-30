@@ -41,8 +41,9 @@ export class ProductsController {
                 marcaId: {type: 'string'},
                 lineaId: {type: 'string'},
                 rubroId: {type: 'string'},
-                precioId: {type: 'string'},
-                imgUrl: { type: 'string', format: 'binary' },
+                precio: { type: 'number', example: 1000.50 },
+                listaPrecio: { type: 'number', example: 1 }, 
+                file: { type: 'string', format: 'binary' },
 
             },
         },
@@ -56,7 +57,7 @@ export class ProductsController {
         return newProduct;
     }
 
-        @Get('public')
+    @Get('public')
     @ApiOperation({ summary: 'Obtener productos sin precios (público)' })
     @ApiResponse({ status: 200, description: 'Productos obtenidos sin información de precios' })
     @ApiQuery({ name: 'linea', required: false })

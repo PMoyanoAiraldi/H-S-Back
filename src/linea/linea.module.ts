@@ -11,12 +11,16 @@ import { Linea } from "./linea.entity";
 import { LineaService } from "./linea.service";
 import { LineaController } from "./linea.controller";
 import { Precio } from "src/precio/precio.entity";
+import { MarcaService } from "src/marca/marca.service";
+import { Marca } from "src/marca/marca.entity";
+import { RubroService } from "src/rubro/rubro.service";
+import { Rubro } from "src/rubro/rubro.entity";
 
 
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Linea, User, Products, Order, Precio, OrderProduct])],
-    providers: [LineaService, CloudinaryService, FileUploadService, ProductService],
+    imports: [TypeOrmModule.forFeature([Linea, Marca, Rubro, User, Products, Order, Precio, OrderProduct])],
+    providers: [LineaService, CloudinaryService, MarcaService, RubroService, FileUploadService, ProductService],
     controllers: [LineaController],
     exports: [LineaService, TypeOrmModule]
 })

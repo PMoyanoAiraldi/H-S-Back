@@ -8,6 +8,8 @@ import { CloudinaryService } from "src/file-upload/cloudinary.service";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { LineaService } from "src/linea/linea.service";
 import { Precio } from "src/precio/precio.entity";
+import { MarcaService } from "src/marca/marca.service";
+import { RubroService } from "src/rubro/rubro.service";
 
 
 
@@ -19,6 +21,8 @@ export class ProductService {
         @InjectRepository(Precio)  
         private readonly precioRepository: Repository<Precio>,
         private readonly lineaService: LineaService,
+        private readonly marcaService: MarcaService,
+        private readonly rubroService: RubroService,
         private readonly cloudinaryService: CloudinaryService
                 
     ) { }
@@ -46,21 +50,24 @@ export class ProductService {
                 throw new NotFoundException(`Linea con ID ${createProductDto.lineaId} no encontrada`);
             }
             console.log('Linea encontrada:', linea);
-    
-            //Validamos y obtenemos el precio si se proporciona
-            let precio = null;
-                    if (createProductDto.precioId) {
-                        precio = await this.precioRepository.findOne({ 
-                            where: { id: createProductDto.precioId } 
-                        });
-                        if (!precio) {
-                            throw new NotFoundException(`Precio con ID ${createProductDto.precioId} no encontrado`);
-                        }
-                        console.log('Precio encontrado:', precio);
+
+            if (createProductDto.marcaId) {
+            const marca = await this.marcaService.findOne(createProductDto.marcaId);
+            if (!marca) {
+                throw new NotFoundException(`Marca con ID ${createProductDto.marcaId} no encontrada`);
             }
+            console.log('Marca encontrada:', marca);
+        }
 
+            if (createProductDto.rubroId) {
+            const rubro = await this.rubroService.findOneRubro(createProductDto.rubroId);
+            if (!rubro) {
+                throw new NotFoundException(`Rubro con ID ${createProductDto.rubroId} no encontrado`);
+            }
+            console.log('Rubro encontrado:', rubro);
+        }
 
-            // Subir la imagen si existe un archivo
+          // Subir la imagen si existe un archivo
             let imageUrl: string | undefined;
             if (file) {
                 try {
@@ -72,8 +79,8 @@ export class ProductService {
                     throw new InternalServerErrorException('Error al subir la imagen');
                 }
             }
-    
-            // Crear el producto directamente con la URL de la imagen si existe
+
+              // Crear el producto sin el precio
             const newProduct = this.productsRepository.create({
                 nombre: createProductDto.nombre,
                 descripcion: createProductDto.descripcion,
@@ -85,17 +92,28 @@ export class ProductService {
                 rubro: { id: createProductDto.rubroId }, 
                 //subRubro: createProductDto.subrubroId ? { id: createProductDto.subrubroId } : undefined, 
                 imgUrl: imageUrl || createProductDto.imgUrl || 'default-image-url.jpg',
-                precios: precio ? [precio] : [] // Asociar el precio si existe
+                //precios: precio ? [precio] : [] // Asociar el precio si existe
             });
-    
+
             // Guardar la clase y esperar su confirmación
             const savedProduct = await this.productsRepository.save(newProduct);
+            console.log("Producto guardado", savedProduct)
     
-
+            //Validamos y obtenemos el precio si se proporciona
+            if (createProductDto.precio) {
+                const precio = this.precioRepository.create({
+                producto: savedProduct, // Asociar con el producto recién creado
+                precio: createProductDto.precio,
+                listaPrecio: createProductDto.listaPrecio || 1 // Lista 1 por defecto
+            });
+            await this.precioRepository.save(precio);
+            console.log('Precio guardado:', precio);
+            }
+    
             // Cargar las relaciones para el response
         const productWithRelations = await this.productsRepository.findOne({
             where: { id: savedProduct.id },
-            relations: ['marca', 'linea', 'rubro', 'subRubro', 'precios']
+            relations: ['marca', 'linea', 'rubro', 'precios']
         });
 
             return ResponseProductDto.fromEntity(productWithRelations);
