@@ -5,11 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/users.entity';
 import { UserService } from 'src/user/users.service';
 import { LineaService } from 'src/linea/linea.service';
+import { Products } from 'src/product/product.entity';
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Products]),
   
   ],
   providers: [FileUploadService,UserService, CloudinaryService,  LineaService],

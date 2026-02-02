@@ -11,6 +11,7 @@ import { AuthGuard } from "src/guard/auth.guard";
 import { Products } from "./product.entity";
 import { UpdateStateDto } from "./dto/update-state.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
+import { Precio } from "src/precio/precio.entity";
 
 @ApiTags("Products")
 @Controller("products")
@@ -129,9 +130,8 @@ export class ProductsController {
         return this.productsService.updateState(id, updateStateDto.state);
     }
 
-
     @Put(':id')
-    @UseInterceptors(FileInterceptor('imgUrl'), ) // FileInterceptor maneja la subida del archivo
+    @UseInterceptors(FileInterceptor('file'), ) // FileInterceptor maneja la subida del archivo
     @ApiOperation({ summary: 'Actualizar un producto por ID' })
     @ApiResponse({ status: 200, description: 'Producto actualizado', type: UpdateProductDto })
     @ApiResponse({ status: 404, description: 'Producto no encontrado' }) 
@@ -145,22 +145,26 @@ export class ProductsController {
         schema: {
             type: 'object',
             properties: {
-                name: { type: 'string' },
-                description: { type: 'string' },
-                price: { type: 'number' },
-                stock: { type: 'number' },
-                categoryId: { type: 'string' },
-                imgUrl: { type: 'string', format: 'binary' },
+                nombre: { type: 'string' },
+                descripcion: { type: 'string' },
+                codigo: { type: 'number'},
+                codigoAlternativo1: { type: 'string' },
+                codigoAlternativo2: { type: 'string' },
+                state: { type: 'boolean' },
+                marcaId: { type: 'string' },
+                lineaId: { type: 'string' },
+                rubroId: { type: 'string' },
+                file: { type: 'string', format: 'binary' }
             },
         },
     })
     async updateProduct(
         @Param('id') id: string,
         @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, skipMissingProperties: true })) updateProductDto: UpdateProductDto, 
-        @UploadedFile() img?: Express.Multer.File
+        @UploadedFile() file?: Express.Multer.File
     ): Promise<ResponseProductDto> {
         try {
-            const updateProduct = await this.productsService.update(id, updateProductDto, img);
+            const updateProduct = await this.productsService.update(id, updateProductDto, file);
             if (!updateProduct) {
                 throw new NotFoundException('Producto no encontrado');
             }

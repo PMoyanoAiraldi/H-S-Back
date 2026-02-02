@@ -13,6 +13,7 @@ import { RubroService } from "src/rubro/rubro.service";
 
 
 
+
 @Injectable()
 export class ProductService {
     constructor(
@@ -31,11 +32,11 @@ export class ProductService {
         try {
             console.log('Datos del DTO recibidos:', createProductDto);
             
-            const normalizedName = createProductDto.nombre.trim().toLowerCase();
+            const normalizedName = createProductDto.nombre.trim().toUpperCase();
     
             const productExist = await this.productsRepository
                 .createQueryBuilder('product')
-                .where('LOWER(product.nombre) = :nombre', { nombre: normalizedName })
+                .where('UPPER(product.nombre) = :nombre', { nombre: normalizedName })
                 .getOne();
     
             if (productExist) {
@@ -82,7 +83,7 @@ export class ProductService {
 
               // Crear el producto sin el precio
             const newProduct = this.productsRepository.create({
-                nombre: createProductDto.nombre,
+                nombre: normalizedName,
                 descripcion: createProductDto.descripcion,
                 codigo: createProductDto.codigo,
                 codigoAlternativo1: createProductDto.codigoAlternativo1,
@@ -128,6 +129,7 @@ export class ProductService {
         }
     }
 
+
     async getProductsClients(page: number, limit: number): Promise<Products[]> {
         return await this.productsRepository.find({
             take: limit,
@@ -151,7 +153,7 @@ export class ProductService {
     async findOne(productId: string): Promise<ResponseProductDto> {
         const product = await this.productsRepository.findOne({
             where: { id: productId },
-            relations: ['linea', 'marca', 'rubro'],
+            relations: ['linea', 'marca', 'rubro', 'precios'],
         });
 
         console.log('Resultado de la consulta:', product);
@@ -178,10 +180,10 @@ export class ProductService {
         return this.productsRepository.findOne({ where: { id } });
     }
 
-    async update(id: string, updateProductDto: UpdateProductDto, file?: Express.Multer.File): Promise<ResponseProductDto> {
+async update(id: string, updateProductDto: UpdateProductDto, file?: Express.Multer.File): Promise<ResponseProductDto> {
         const product = await this.productsRepository.findOne({
             where: { id }, 
-            relations: ['marca', 'linea', 'rubro', 'subRubro', 'precios'], 
+            relations: ['marca', 'linea', 'rubro', 'precios'], 
         });
 
         if (!product) {
@@ -190,11 +192,11 @@ export class ProductService {
 
         // Verificar si el nombre ya existe en otro producto
         if (updateProductDto.nombre?.trim()) {
-            const normalizedName = updateProductDto.nombre.trim().toLowerCase();
+            const normalizedName = updateProductDto.nombre.trim().toUpperCase();
 
             const productExist = await this.productsRepository
                 .createQueryBuilder('product')
-                .where('LOWER(product.nombre) = :nombre', { nombre: normalizedName })
+                .where('UPPER(product.nombre) = :nombre', { nombre: normalizedName })
                 .andWhere('product.id != :id', { id }) // IMPORTANTE: Excluir el producto actual
                 .getOne();
 
@@ -252,6 +254,34 @@ export class ProductService {
         // Guardar el producto actualizado
         const updatedProduct = await this.productsRepository.save(product);
 
+
+        if (updateProductDto.precio !== undefined) {
+        // Buscar si ya existe un precio para esta lista
+        let precio = await this.precioRepository.findOne({
+            where: {
+                producto: { id: updatedProduct.id },
+                listaPrecio: updateProductDto.listaPrecio || 1
+            }
+        });
+
+        if (precio) {
+            // Actualizar precio existente
+            precio.precio = updateProductDto.precio;
+            if (updateProductDto.listaPrecio !== undefined) {
+                precio.listaPrecio = updateProductDto.listaPrecio;
+            }
+        } else {
+            // Crear nuevo precio si no existe
+            precio = this.precioRepository.create({
+                producto: updatedProduct,
+                precio: updateProductDto.precio,
+                listaPrecio: updateProductDto.listaPrecio || 1
+            });
+        }
+
+        await this.precioRepository.save(precio);
+        console.log('Precio actualizado:', precio);
+    }
         // Cargar todas las relaciones para el response
         const productWithRelations = await this.productsRepository.findOne({
             where: { id: updatedProduct.id },
@@ -281,6 +311,22 @@ private async updateRelations(product: Products, updateDto: UpdateProductDto): P
             }
             product.linea = linea;
         }
+
+        if (updateDto.marcaId) {
+        const marca = await this.marcaService.findOne(updateDto.marcaId);
+        if (!marca) {
+            throw new NotFoundException(`Marca con ID ${updateDto.marcaId} no encontrada`);
+        }
+        product.marca = marca;
+    }
+
+        if (updateDto.rubroId) {
+        const rubro = await this.rubroService.findOneRubro(updateDto.rubroId);
+        if (!rubro) {
+            throw new NotFoundException(`Rubro con ID ${updateDto.rubroId} no encontrado`);
+        }
+        product.rubro = rubro;
+    }
 }
 
 async findAllFiltered(filters: {

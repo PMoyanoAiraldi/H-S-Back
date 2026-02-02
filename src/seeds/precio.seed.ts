@@ -14,27 +14,27 @@ export const seedPrecio = async (dataSource: DataSource) => {
     {
         listaPrecio: 1,  
         precio: 49979.58,
-        productId: 'b6abb5a9-f54e-4289-b0ff-5004b40aa3ae'
+        productId: '0d199b6b-479c-4fd9-8a16-1eb9634b5d99'
     },
     {
         listaPrecio: 1,  
         precio: 81.08,
-        productId: '7d62031f-cc0f-4ef0-89fd-59336571e8d5'
+        productId: '14da8a6a-6cde-4d63-b1b7-0e4820abd80e'
     },
     {
         listaPrecio: 1,  
         precio: 44993.74,
-        productId: 'e2aa52bf-2579-4bff-addf-0a824b16056b'
+        productId: '213d1e09-bcbf-4ad4-8147-8c3794efc899'
     },
     {
         listaPrecio: 1,  
         precio: 5273.18,
-        productId: 'b2f900ff-274f-43a4-8110-687a38b3b3a0'
+        productId: '3c04b189-04a3-4e34-bb0c-56fb69c31af0'
     },
     {
         listaPrecio: 1,  
         precio: 314393.20,
-        productId: '0175207a-7daf-4daf-bf05-678b77869af7'
+        productId: 'a4ae98df-e8b5-4cc1-83ed-9bb05953da60'
     },
 ];
 

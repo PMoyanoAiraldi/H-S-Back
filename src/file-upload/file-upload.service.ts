@@ -3,6 +3,9 @@ import { FileUploadDto } from './dto/file-upload.dto';
 import { CloudinaryService } from './cloudinary.service';
 import { ProductService } from 'src/product/product.service';
 import {  LineaService } from 'src/linea/linea.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Products } from 'src/product/product.entity';
+import { Repository } from 'typeorm';
 
 
 
@@ -11,7 +14,9 @@ export class FileUploadService {
     constructor(
         private readonly cloudinaryService: CloudinaryService,
         private readonly productService: ProductService,
-        private readonly lineaService: LineaService
+        private readonly lineaService: LineaService,
+        @InjectRepository(Products) 
+        private readonly productsRepository: Repository<Products>,
     ){}
 
     async uploadFile(
@@ -43,25 +48,33 @@ export class FileUploadService {
         // Actualizar la URL de la imagen en la entidad correspondiente usando los servicios
         switch (entityType) {
             case 'product':
-                // Primero obtenemos el producto actual para no sobrescribir las demás propiedades
-                const product = await this.productService.findOne(entityId);  
-            console.log("Producto guardado", product)
+                if (!entityId) {
+                    throw new Error('No se proporcionó un ID del producto para actualizar.');
+                }
+
+                //  Actualizar directamente en el repositorio
+                const product = await this.productsRepository.findOne({ 
+                    where: { id: entityId } 
+                });
 
             if (!product) {
                 throw new Error('Producto no encontrado');
             }
             
-            // if (!product.categoryId) {
-            //     throw new Error('La categoría no existe');
-            // }
-            
-        // Actualizamos solo la propiedad imagen, manteniendo las demás propiedades intactas
-        await this.productService.update(entityId, {
-            ...product,   // Propiedades existentes
-            imgUrl: url, // Actualizamos solo la imagen
-            //categoryId: product.categoryId,
-        });
-            break;
+           // Eliminar la imagen anterior si existe
+                if (product.imgUrl && product.imgUrl !== 'default-image-url.jpg') {
+                    try {
+                        await this.cloudinaryService.deleteFile(product.imgUrl);
+                    } catch (error) {
+                        console.error('Error al eliminar imagen anterior:', error);
+                    }
+                }
+
+                // Actualizar solo la URL de la imagen
+                product.imgUrl = url;
+                await this.productsRepository.save(product);
+                console.log("Imagen del producto actualizada", product);
+                break;
 
         case 'linea':
             // Valida si `entityId` está presente

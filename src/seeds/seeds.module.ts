@@ -17,8 +17,9 @@ export class SeedModule implements OnModuleInit {
         await seedLinea(this.dataSource);
         await seedMarca(this.dataSource);
         await seedRubro(this.dataSource);
+        
         await seedProduct(this.dataSource);
-        await seedPrecio(this.dataSource)
+        await seedPrecio(this.dataSource);
         
         
     }
