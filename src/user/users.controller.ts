@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, UseGuards, UseInterceptors, Param, Patch } from "@nestjs/common";
+import { Body, Controller, Post, Get, UseGuards, UseInterceptors, Param, Patch, HttpCode, HttpStatus } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiSecurity, ApiTags } from "@nestjs/swagger";
 import { UserService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -45,9 +45,10 @@ export class UsersController {
     }
 
     @Post('recover')
+    @HttpCode(HttpStatus.OK)
     async recoverPassword(@Body() recoverData: RecoverPasswordDto) {
-        const user = await this.usersService.recoverPassword(recoverData);
-        return { message: 'Contraseña actualizada con éxito!', user};
+        const result = await this.usersService.recoverPassword(recoverData);
+        return result;
     }
 
     @Get()

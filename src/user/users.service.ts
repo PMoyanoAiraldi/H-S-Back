@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "./users.entity";
+import { rolEnum, User } from "./users.entity";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
 import * as bcrypt from 'bcrypt';
@@ -80,7 +80,7 @@ export class UserService {
                 : `${client.nombre}_${client.apellido}`.toLowerCase();
         }
 
-        async recoverPassword(recoverPasswordDto: RecoverPasswordDto): Promise<User>{
+        async recoverPassword(recoverPasswordDto: RecoverPasswordDto): Promise<{ message: string }>{
 
             if (recoverPasswordDto.password !== recoverPasswordDto.cPassword) {
                 throw new BadRequestException('Las contraseñas no coinciden');
@@ -92,10 +92,25 @@ export class UserService {
                 throw new NotFoundException('Usuario no encontrado');
             }
             
+            // 3. IMPORTANTE: Verificar que sea un cliente (no admin o vendedor)
+            if (user.rol !== rolEnum.CLIENTE) {  // Ajusta según tu enum de roles
+                throw new ForbiddenException('Solo los clientes pueden recuperar su contraseña. Contacta con administración.');
+            }
+
+            // 4. Verificar que el usuario esté activo (opcional pero recomendado)
+            if (!user.state) {
+                throw new ForbiddenException('Tu cuenta está inactiva. Contacta con administración.');
+            }
+
             const hashedPassword = await bcrypt.hash(recoverPasswordDto.password, 10); // o el método que uses
 
             user.password = hashedPassword;
-            return await this.usersRepository.save(user);
+            await this.usersRepository.save(user);
+
+              // 7. NO devolver el usuario completo (por seguridad)
+            return { 
+                message: 'Contraseña actualizada exitosamente. Por favor inicia sesión con tu nueva contraseña.' 
+            };
         }
 
     async updateUserState(id: string, state: boolean): Promise<User> {
