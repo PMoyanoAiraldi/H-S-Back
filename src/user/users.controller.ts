@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, UseGuards, UseInterceptors, Param, Patch, HttpCode, HttpStatus } from "@nestjs/common";
+import { Body, Controller, Post, Get, UseGuards, UseInterceptors, Param, Patch, HttpCode, HttpStatus, Query } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiSecurity, ApiTags } from "@nestjs/swagger";
 import { UserService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -7,6 +7,8 @@ import { AuthGuard } from "src/guard/auth.guard";
 import { RolesGuard } from "src/guard/roles.guard";
 import { User } from "./users.entity";
 import { RecoverPasswordDto } from "./dto/recover-password.dto";
+import { FindOptionsWhere, Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 
 
 @ApiTags("Users")
@@ -14,6 +16,8 @@ import { RecoverPasswordDto } from "./dto/recover-password.dto";
 export class UsersController {
     constructor(
         private readonly usersService: UserService,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
     ) { }
 
     @Post('register')
@@ -57,8 +61,35 @@ export class UsersController {
     @UseGuards(AuthGuard, RolesGuard)
     @Roles('admin')
     @ApiSecurity('bearer')
-    async findAll(): Promise<User[]> {
-        return this.usersService.findAll();
+    async findAll(
+        @Query('page') page = '1',
+        @Query('limit') limit = '100',
+        @Query('state') state?: string,
+        @Query('rol') rol?: string
+    ) {
+        const pageNumber = Number(page) || 1;
+        const limitNumber = Math.min(Number(limit) || 100, 100);
+
+        const where: FindOptionsWhere<User> = {};
+
+        if (state === 'active') where.state = true;
+        if (state === 'inactive') where.state = false;
+
+        if (rol && rol !== 'todos') where.rol = rol as any;
+
+        const [users, total] = await this.userRepository.findAndCount({
+            where,
+            order: { nombre: 'ASC' },
+            take: limitNumber,
+            skip: (pageNumber - 1) * limitNumber,
+        });
+
+        return {
+            total,
+            totalPages: Math.ceil(total / limitNumber),
+            page: pageNumber,
+            data: users,
+        };
     }
     
 

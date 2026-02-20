@@ -16,6 +16,7 @@ import { RubroModule } from './rubro/rubro.module';
 import { SubRubroModule } from './subRubro/subRubro.module';
 import { PrecioModule } from './precio/precio.module';
 import { SeedModule } from './seeds/seeds.module';
+import { SftpModule } from './sftp/sftp.module';
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { SeedModule } from './seeds/seeds.module';
     RubroModule,
     SubRubroModule,
     PrecioModule,
-    SeedModule
+    SeedModule,
+    SftpModule
   
   ],
 controllers: [AppController],
