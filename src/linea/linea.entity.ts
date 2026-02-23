@@ -16,7 +16,7 @@ export class Linea {
     @Column({ type: 'int', nullable: false, unique: true })
     codigo: number;
 
-    @Column({ unique: true })
+    @Column()
     nombre: string; // Del CSV "Lineas" - Columna "Nombre"
 
     @Column({ default: 'default-image-url.jpg', nullable: true })

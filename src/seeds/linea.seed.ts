@@ -38,7 +38,7 @@ export const seedLinea = async (dataSource: DataSource) => {
   // Insertar lineas si no existen
     for (const lineas of linea) {
         const existingLinea = await lineaRepository.findOne({
-        where: { nombre: lineas.nombre },
+        where: { codigo: lineas.codigo },
         });
 
         if (!existingLinea) {

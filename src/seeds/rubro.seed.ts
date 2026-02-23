@@ -34,7 +34,7 @@ export const seedRubro = async (dataSource: DataSource) => {
   // Insertar rubros si no existen
     for (const rubros of rubro) {
         const existingRubro = await rubroRepository.findOne({
-        where: { nombre: rubros.nombre },
+        where: { codigo: rubros.codigo },
         });
 
         if (!existingRubro) {

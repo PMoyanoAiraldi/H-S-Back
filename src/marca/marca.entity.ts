@@ -15,8 +15,12 @@ export class Marca {
     @Column({ type: 'int', nullable: false, unique: true })
     codigo: number;
 
-    @Column({ unique: true })
+    @Column()
     nombre: string; // Del CSV "Marcas" - Columna "Nombre"
+
+    @Column({ default: 'default-image-url.jpg', nullable: true })
+    imgUrl?: string;
+
 
     @Column({ default: true }) 
     state: boolean;

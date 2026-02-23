@@ -14,11 +14,11 @@ export const seedProduct = async (dataSource: DataSource) => {
 
     try {
 
-    const bombas = await lineaRepository.findOne({ where: { nombre: 'BOMBAS A PISTONES REXROTH' } });
-    const motores = await lineaRepository.findOne({ where: { nombre: 'MOTOR ORBITAL M+S' } });
-    const valvulas = await lineaRepository.findOne({ where: { nombre: 'VALVULAS' } });
-    const mangueras = await lineaRepository.findOne({ where: { nombre: 'MANGUERAS HIDRAULICAS' } });
-    const cilindros = await lineaRepository.findOne({ where: { nombre: 'CILINDROS HIDRAULICOS  Y  REPUESTOS' } });
+    const bombas = await lineaRepository.findOne({ where: { codigo: 319 } });
+    const motores = await lineaRepository.findOne({ where: { codigo: 21 } });
+    const valvulas = await lineaRepository.findOne({ where: { codigo: 26 } });
+    const mangueras = await lineaRepository.findOne({ where: { codigo: 12 } });
+    const cilindros = await lineaRepository.findOne({ where: { codigo: 11 } });
 
     console.log({ bombas, motores, valvulas, mangueras, cilindros });
     if (!bombas || !motores || !valvulas || !mangueras || !cilindros) {
@@ -27,11 +27,11 @@ export const seedProduct = async (dataSource: DataSource) => {
 
         console.log('✅ Todas las lineas encontradas, creando productos...');
     
-    const rexroth = await marcaRepository.findOne({ where: { nombre: 'REXROTH'}});
-    const graselli = await marcaRepository.findOne({ where: { nombre: 'GRASELLI JUAN E HIJOS S.A'}});
-    const verion = await marcaRepository.findOne({ where: { nombre: 'VERION'}});
-    const metalurgicaCesca = await marcaRepository.findOne({ where: { nombre: 'METALURGICA CESCA'}});
-    const moroAlberto = await marcaRepository.findOne({ where: { nombre: 'MORO ALBERTO'}});
+    const rexroth = await marcaRepository.findOne({ where: { codigo: 162}});
+    const graselli = await marcaRepository.findOne({ where: { codigo: 140}});
+    const verion = await marcaRepository.findOne({ where: { codigo: 71}});
+    const metalurgicaCesca = await marcaRepository.findOne({ where: { codigo: 11}});
+    const moroAlberto = await marcaRepository.findOne({ where: { codigo: 17}});
 
     if (!rexroth || !graselli || !verion || !metalurgicaCesca || !moroAlberto) {
             throw new Error('❌ Alguna marca no existe. Revisá el seed de marcas.');
@@ -39,11 +39,11 @@ export const seedProduct = async (dataSource: DataSource) => {
 
         console.log('✅ Todas las marcas encontradas, creando productos...');
 
-    const pauny = await rubroRepository.findOne({ where: { nombre: 'PAUNY'}});
-    const motoresOrbitales = await rubroRepository.findOne({ where: { nombre: 'MOTORES ORBITALES STD'}});
-    const valvulasVarias = await rubroRepository.findOne({ where: { nombre: 'VALVULAS VARIAS'}});
-    const altaPresion = await rubroRepository.findOne({ where: { nombre: 'ALTA PRESION (R1)'}});
-    const cilindrosStd = await rubroRepository.findOne({ where: { nombre: 'CILINDROS STD'}});
+    const pauny = await rubroRepository.findOne({ where: { codigo: 5}});
+    const motoresOrbitales = await rubroRepository.findOne({ where: { codigo: 1}});
+    const valvulasVarias = await rubroRepository.findOne({ where: { codigo: 2}});
+    const altaPresion = await rubroRepository.findOne({ where: { codigo: 1}});
+    const cilindrosStd = await rubroRepository.findOne({ where: { codigo: 11}});
 
     if (!pauny || !motoresOrbitales || !valvulasVarias || !altaPresion || !cilindrosStd) {
             throw new Error('❌ Algun rubro no existe. Revisá el seed de rubros.');
@@ -119,7 +119,7 @@ export const seedProduct = async (dataSource: DataSource) => {
   // Insertar productos si no existen
     for (const product of products) {
         const existingProduct = await productRepository.findOne({
-        where: { nombre: product.nombre },
+        where: { codigo: product.codigo },
         });
 
         if (!existingProduct) {

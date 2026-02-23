@@ -15,7 +15,7 @@ export class Rubro {
     @Column({ type: 'int', nullable: false })
     codigo: number;
 
-    @Column({ unique: true })
+    @Column()
     nombre: string; // Del CSV "Rubros" - Columna "Nombre"
 
     @Column({ default: true }) 
