@@ -582,7 +582,10 @@ async findAllForAdmin(filters: {
     }
 
     const skip = (filters.page - 1) * filters.limit;
-    query.skip(skip).take(filters.limit);
+    query
+        .orderBy('product.nombre', 'ASC')
+        .skip(skip)
+        .take(filters.limit);
 
     const [products, total] = await query.getManyAndCount();
 

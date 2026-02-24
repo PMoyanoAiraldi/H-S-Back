@@ -80,8 +80,8 @@ export class ProductsController {
             rubro,
             marca,
             search,
-            page,
-            limit
+            page: Number(page),
+            limit: Number(limit)
         });
     }
 
@@ -93,7 +93,7 @@ export class ProductsController {
     @UseGuards(AuthGuard, RolesGuard)
     @Roles('admin', 'cliente')
     @ApiSecurity('bearer')
-    async getProductsClents(
+    async getProductsClients(
         @Query('page') page: number = 1,
         @Query('limit') limit: number = 10,
     ) {
@@ -201,8 +201,8 @@ export class ProductsController {
             rubro,
             marca,
             search,
-            page,
-            limit
+            page: Number(page),
+            limit: Number(limit)
         });
     }
 
@@ -244,8 +244,8 @@ export class ProductsController {
             rubro,
             marca,
             search,
-            page,
-            limit
+            page: Number(page),
+            limit: Number(limit)
         });
     }
 
