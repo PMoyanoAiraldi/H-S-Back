@@ -65,24 +65,24 @@ export class UsersController {
         @Query('page') page = '1',
         @Query('limit') limit = '100',
         @Query('state') state?: string,
-        @Query('rol') rol?: string
+        @Query('rol') rol?: string,
+        @Query('search') search?: string
     ) {
         const pageNumber = Number(page) || 1;
         const limitNumber = Math.min(Number(limit) || 100, 100);
 
-        const where: FindOptionsWhere<User> = {};
+        const query = this.userRepository
+        .createQueryBuilder('user')
+        .orderBy('user.nombre', 'ASC')
+        .take(limitNumber)
+        .skip((pageNumber - 1) * limitNumber);
+                                            //SQL con un placeholder :state // { state: true } → el valor que reemplaza al placeholder
+        if (state === 'active') query.andWhere('user.state = :state', { state: true });
+        if (state === 'inactive') query.andWhere('user.state = :state', { state: false });
+        if (rol && rol !== 'todos') query.andWhere('user.rol = :rol', { rol });
+        if (search) query.andWhere('user.nombre ILIKE :search', { search: `%${search}%` });
 
-        if (state === 'active') where.state = true;
-        if (state === 'inactive') where.state = false;
-
-        if (rol && rol !== 'todos') where.rol = rol as any;
-
-        const [users, total] = await this.userRepository.findAndCount({
-            where,
-            order: { nombre: 'ASC' },
-            take: limitNumber,
-            skip: (pageNumber - 1) * limitNumber,
-        });
+        const [users, total] = await query.getManyAndCount();
 
         return {
             total,
