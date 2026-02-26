@@ -6,6 +6,7 @@ import { Linea } from 'src/linea/linea.entity';
 import { Rubro } from 'src/rubro/rubro.entity';
 import { SubRubro } from 'src/subRubro/subRubro.entity';
 import { Precio } from 'src/precio/precio.entity';
+import { Aplicacion } from 'src/aplicacion/aplicacion.entity';
 
 @Entity()
 export class Products {
@@ -56,6 +57,10 @@ export class Products {
 
     @ManyToOne(() => Rubro, (rubro) => rubro.productos)
     rubro: Rubro; // Del CSV "Articulos" - Columna "Rubro"
+
+    @ManyToMany(() => Aplicacion, (aplicacion) => aplicacion.productos)
+    @JoinTable() // va en el lado "dueño" de la relación (Products)
+    aplicaciones?: Aplicacion[];
 
     // @ManyToOne(() => SubRubro, (subRubro) => subRubro.productos, { nullable: true })
     // subRubro?: SubRubro; // Del CSV "Articulos" - Columna "SubRubro"

@@ -17,6 +17,7 @@ import { SubRubroModule } from './subRubro/subRubro.module';
 import { PrecioModule } from './precio/precio.module';
 import { SeedModule } from './seeds/seeds.module';
 import { SftpModule } from './sftp/sftp.module';
+import { AplicacionModule } from './aplicacion/aplicacion.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { SftpModule } from './sftp/sftp.module';
     RubroModule,
     SubRubroModule,
     PrecioModule,
+    AplicacionModule,
     SeedModule,
     SftpModule
   
