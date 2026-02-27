@@ -15,6 +15,12 @@ export class Precio {
     @Column('decimal', { precision: 10, scale: 2 })
     precio: number; // Del CSV "Precios" - Columna "Valor"
 
+    @Column({ type: 'integer', default: 0 })
+    moneda: number; // 0 = ARS, 1 = USD
+
+    @Column({ type: 'numeric', precision: 10, scale: 2, nullable: true })
+    precioOriginal: number; // El valor en USD sin convertir
+
     @UpdateDateColumn()
     updatedAt: Date;
 }

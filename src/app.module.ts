@@ -18,6 +18,7 @@ import { PrecioModule } from './precio/precio.module';
 import { SeedModule } from './seeds/seeds.module';
 import { SftpModule } from './sftp/sftp.module';
 import { AplicacionModule } from './aplicacion/aplicacion.module';
+import { ConfiguracionModule } from './configuracion/configuracion.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { AplicacionModule } from './aplicacion/aplicacion.module';
     SubRubroModule,
     PrecioModule,
     AplicacionModule,
+    ConfiguracionModule,
     SeedModule,
     SftpModule
   
