@@ -49,8 +49,8 @@ export class RubroService {
                 }
     async findAllRubro(): Promise<Rubro[]> {
             return await this.rubroRepository.find({
-            order: { nombre: 'ASC' }
-        });
+                order: { nombre: 'ASC' }
+                });
     }
 
     async findAllActive(): Promise<Rubro[]> {

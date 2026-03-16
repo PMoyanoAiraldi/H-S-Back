@@ -16,6 +16,9 @@ export class Aplicacion {
     @Column()
     nombre: string; 
 
+    // @Column()
+    // subtitulo: string; 
+
     @Column({ default: 'default-image-url.jpg', nullable: true })
     imgUrl?: string;
 

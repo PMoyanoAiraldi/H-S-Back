@@ -49,14 +49,14 @@ export class Products {
     descripcion?: string;
 
 
-    @ManyToOne(() => Marca, (marca) => marca.productos)
+    @ManyToOne(() => Marca, (marca) => marca.productos, { nullable: true })
     marca: Marca; // Del CSV "Articulos" - Columna "Marca"
 
     @ManyToOne(() => Linea, (linea) => linea.productos, { nullable: true })
     linea?: Linea; // Del CSV "Articulos" - Columna "Linea"
 
-    @ManyToOne(() => Rubro, (rubro) => rubro.productos)
-    rubro: Rubro; // Del CSV "Articulos" - Columna "Rubro"
+    @ManyToOne(() => Rubro, (rubro) => rubro.productos, { nullable: true })
+    rubro?: Rubro; // Del CSV "Articulos" - Columna "Rubro"
 
     @ManyToMany(() => Aplicacion, (aplicacion) => aplicacion.productos)
     @JoinTable() // va en el lado "dueño" de la relación (Products)

@@ -12,11 +12,13 @@ export const seedAplicacion = async (dataSource: DataSource) => {
             {
                 codigo: 1,
                 nombre: 'Cosechadoras',
+                subtitulo: 'Bombas hidráulicas',
                 imgUrl: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1758830951/Cosechadora_hbnd69.png',
             },
             {
                 codigo: 2,
                 nombre: 'Pulverizadores',
+                subtitulo: '',
                 imgUrl: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1759957514/pulverizador_vwlui0.png',
             },
             {
@@ -33,6 +35,31 @@ export const seedAplicacion = async (dataSource: DataSource) => {
                 codigo: 5,
                 nombre: 'Ognibene Power',
                 imgUrl: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1761083289/Ognibene_power_recortado_cmyyxq.png',
+            },
+            {
+                codigo: 6,
+                nombre: 'Juego de gomas',
+                imgUrl: '',
+            },
+            {
+                codigo: 7,
+                nombre: 'Otras máquinas',
+                imgUrl: 'https://res.cloudinary.com/dl7hjkrhq/image/upload/v1772483551/retroexcavadora_l5ebws.png',
+            },
+            {
+                codigo: 8,
+                nombre: 'Bombas a pistones',
+                imgUrl: '',
+            },
+            {
+                codigo: 9,
+                nombre: 'Bombas standard',
+                imgUrl: '',
+            },
+            {
+                codigo: 10,
+                nombre: 'Repuestos',
+                imgUrl: '',
             },
         ];
 

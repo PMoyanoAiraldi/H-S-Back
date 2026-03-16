@@ -19,6 +19,7 @@ import { SeedModule } from './seeds/seeds.module';
 import { SftpModule } from './sftp/sftp.module';
 import { AplicacionModule } from './aplicacion/aplicacion.module';
 import { ConfiguracionModule } from './configuracion/configuracion.module';
+import { TipoCambioModule } from './tipoCambio/tipoCambio.module';
 
 @Module({
   imports: [
@@ -47,7 +48,8 @@ import { ConfiguracionModule } from './configuracion/configuracion.module';
     AplicacionModule,
     ConfiguracionModule,
     SeedModule,
-    SftpModule
+    SftpModule,
+    TipoCambioModule
   
   ],
 controllers: [AppController],

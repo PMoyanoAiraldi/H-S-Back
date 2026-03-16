@@ -51,6 +51,7 @@ export class RubroController {
         
     @Get('admin/all')
     @ApiOperation({ summary: 'Obtener TODOS los rubros (activos e inactivos) - Solo Admin' })
+    @ApiResponse({ status: 200, description: 'Lista de rubros', type: [Rubro] })
     @UseGuards(AuthGuard, RolesGuard)
     @Roles('admin')
     @ApiSecurity('bearer')

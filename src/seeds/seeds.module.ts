@@ -1,6 +1,6 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-// import { seedUsers } from './users.seed';
+import { seedUsers } from './users.seed';
 // import { seedProduct } from './product.seed';
 // import { seedLinea } from './linea.seed';
 // import { seedRubro } from './rubro.seed';
@@ -16,7 +16,7 @@ export class SeedModule implements OnModuleInit {
     async onModuleInit() {
 
         await seedAplicacion(this.dataSource)
-        // await seedUsers(this.dataSource); 
+        await seedUsers(this.dataSource); 
         // await seedLinea(this.dataSource);
         // await seedMarca(this.dataSource);
         // await seedRubro(this.dataSource);
